@@ -5,3 +5,6 @@ spring:
     multipart:
       location: /Users/kimnayeon/Documents/fileupload
       max-file-size: 100MB
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
