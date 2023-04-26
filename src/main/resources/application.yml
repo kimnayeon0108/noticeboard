@@ -1,3 +1,7 @@
 spring:
   profiles:
     include: mariadb
+  servlet:
+    multipart:
+      location: /Users/kimnayeon/Documents/fileupload
+      max-file-size: 100MB
