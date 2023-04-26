@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class ResponseBody<T> {
 
-    private T date;
+    private T data;
     private ErrorResponse error;
 
     public static <T> ResponseBody<T> success(T data) {
