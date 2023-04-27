@@ -28,12 +28,14 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
     private String title;
     private String body;
     private boolean publicState;
     private String password;
     private boolean commentActiveState;
     private int viewCount;
+    private boolean isDeleted;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

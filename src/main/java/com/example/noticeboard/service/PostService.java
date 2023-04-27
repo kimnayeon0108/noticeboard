@@ -4,13 +4,17 @@ import com.example.noticeboard.domain.Category;
 import com.example.noticeboard.domain.Post;
 import com.example.noticeboard.domain.PostFile;
 import com.example.noticeboard.domain.User;
+import com.example.noticeboard.dto.PagingResponse;
 import com.example.noticeboard.dto.PostDto;
+import com.example.noticeboard.dto.PostListRequest;
 import com.example.noticeboard.dto.PostRequest;
 import com.example.noticeboard.repository.CategoryRepository;
 import com.example.noticeboard.repository.PostFileRepository;
 import com.example.noticeboard.repository.PostRepository;
 import com.example.noticeboard.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +29,7 @@ import static java.util.UUID.randomUUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostService {
 
     private final PostRepository postRepository;
@@ -32,7 +37,6 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
 
-    @Transactional
     public PostDto addPost(PostRequest postRequest, MultipartFile[] files) throws IOException {
         Category category = categoryRepository.findById(postRequest.getCategoryId()).orElseThrow(() -> new RuntimeException("카테고리 미존재"));
         User user = userRepository.findById(postRequest.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
@@ -72,5 +76,15 @@ public class PostService {
         }
         postFileRepository.saveAll(postFiles);
         return postFiles;
+    }
+
+    @Transactional(readOnly = true)
+    public PagingResponse<PostDto> getPosts(PostListRequest postListRequest) {
+
+        Page<PostDto> postDtoPage = postRepository.findAllByConditions(postListRequest,
+                        PageRequest.of(postListRequest.getPage() - 1, postListRequest.getPageSize()))
+                .map(PostDto::of);
+
+        return PagingResponse.of(postDtoPage);
     }
 }
