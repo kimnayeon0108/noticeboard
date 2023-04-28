@@ -40,4 +40,11 @@ public class PostController extends ApiV1Controller {
     public ResponseEntity<ResponseBody<PostResponse>> showPostDetail(@PathVariable long postId) {
         return new ResponseEntity<>(ResponseBody.success(postService.getPost(postId)), HttpStatus.OK);
     }
+
+    @PutMapping("/posts/{postId}")
+    public ResponseEntity<ResponseBody<PostResponse>> editPost(@PathVariable long postId,
+                                                               @RequestPart(value = "postRequest") PostRequest postRequest,
+                                                               @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) throws IOException {
+        return new ResponseEntity<>(ResponseBody.success(postService.updatePost(postId, postRequest, multipartFiles)), HttpStatus.OK);
+    }
 }

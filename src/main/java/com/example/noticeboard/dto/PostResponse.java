@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Getter
 public class PostResponse {
 
+    private long id;
     private String title;
     private String writerName;
     private String body;
@@ -23,7 +24,8 @@ public class PostResponse {
     private LocalDateTime updatedAt;
 
     public static PostResponse of(Post post, List<String> filenames) {
-        return PostResponse.builder().title(post.getTitle())
+        return PostResponse.builder().id(post.getId())
+                .title(post.getTitle())
                 .writerName(post.getUser().getName())
                 .body(post.getBody())
                 .categoryName(post.getCategory().getName())
@@ -35,7 +37,8 @@ public class PostResponse {
     }
 
     public static PostResponse of(Post post) {
-        return PostResponse.builder().title(post.getTitle())
+        return PostResponse.builder().id(post.getId())
+                .title(post.getTitle())
                 .writerName(post.getUser().getName())
                 .body(post.getBody())
                 .categoryName(post.getCategory().getName())

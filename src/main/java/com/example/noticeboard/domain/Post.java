@@ -1,5 +1,6 @@
 package com.example.noticeboard.domain;
 
+import com.example.noticeboard.dto.PostRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,5 +67,13 @@ public class Post {
 
     public boolean hasPassword() {
         return this.password != null;
+    }
+
+    public void update(PostRequest postRequest, Category category) {
+        this.publicState = postRequest.isPublic();
+        this.password = postRequest.getPassword();
+        this.category = category;
+        this.title = postRequest.getTitle();
+        this.body = postRequest.getBody();
     }
 }

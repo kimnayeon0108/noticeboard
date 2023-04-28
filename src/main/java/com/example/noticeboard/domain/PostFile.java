@@ -34,4 +34,9 @@ public class PostFile {
         this.contentType = contentType;
         this.isDeleted = false;
     }
+
+    public void delete() {
+        this.isDeleted = true;
+        this.post = null;
+    }
 }
