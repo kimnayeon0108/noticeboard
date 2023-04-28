@@ -5,12 +5,12 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class ResponseBody<T> {
+public class ResponseDto<T> {
 
     private T data;
     private ErrorResponse error;
 
-    public static <T> ResponseBody<T> success(T data) {
-        return new ResponseBody<>(data, null);
+    public static <T> ResponseDto<T> success(T data) {
+        return new ResponseDto<>(data, null);
     }
 }
