@@ -4,10 +4,7 @@ import com.example.noticeboard.domain.Category;
 import com.example.noticeboard.domain.Post;
 import com.example.noticeboard.domain.PostFile;
 import com.example.noticeboard.domain.User;
-import com.example.noticeboard.dto.PagingResponse;
-import com.example.noticeboard.dto.PostDto;
-import com.example.noticeboard.dto.PostListRequest;
-import com.example.noticeboard.dto.PostRequest;
+import com.example.noticeboard.dto.*;
 import com.example.noticeboard.repository.CategoryRepository;
 import com.example.noticeboard.repository.PostFileRepository;
 import com.example.noticeboard.repository.PostRepository;
@@ -37,7 +34,7 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
 
-    public PostDto addPost(PostRequest postRequest, MultipartFile[] files) throws IOException {
+    public PostResponse addPost(PostRequest postRequest, MultipartFile[] files) throws IOException {
         Category category = categoryRepository.findById(postRequest.getCategoryId()).orElseThrow(() -> new RuntimeException("카테고리 미존재"));
         User user = userRepository.findById(postRequest.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
 
@@ -58,7 +55,7 @@ public class PostService {
             filenames = postFiles.stream().map(PostFile::getFilename).collect(Collectors.toList());
         }
 
-        return PostDto.of(post, filenames);
+        return PostResponse.of(post, filenames);
     }
 
     private List<PostFile> saveAsNewFilename(MultipartFile[] files, Post post) throws IOException {
@@ -79,11 +76,11 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PagingResponse<PostDto> getPosts(PostListRequest postListRequest) {
+    public PagingResponse<PostResponse> getPosts(PostListRequest postListRequest) {
 
-        Page<PostDto> postDtoPage = postRepository.findAllByConditions(postListRequest,
+        Page<PostResponse> postDtoPage = postRepository.findAllByConditions(postListRequest,
                         PageRequest.of(postListRequest.getPage() - 1, postListRequest.getPageSize()))
-                .map(PostDto::of);
+                .map(PostResponse::of);
 
         return PagingResponse.of(postDtoPage);
     }
@@ -101,5 +98,13 @@ public class PostService {
         }
 
         return false;
+    }
+
+    public PostResponse getPost(long postId) {
+        postRepository.updateViewCount(postId);
+
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     //Todo: custom 예외
+
+        return PostResponse.of(post);
     }
 }

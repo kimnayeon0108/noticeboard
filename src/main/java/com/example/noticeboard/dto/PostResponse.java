@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Builder
 @Getter
-public class PostDto {
+public class PostResponse {
 
     private String title;
     private String writerName;
@@ -22,8 +22,8 @@ public class PostDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static PostDto of(Post post, List<String> filenames) {
-        return PostDto.builder().title(post.getTitle())
+    public static PostResponse of(Post post, List<String> filenames) {
+        return PostResponse.builder().title(post.getTitle())
                 .writerName(post.getUser().getName())
                 .body(post.getBody())
                 .categoryName(post.getCategory().getName())
@@ -34,8 +34,8 @@ public class PostDto {
                 .build();
     }
 
-    public static PostDto of(Post post) {
-        return PostDto.builder().title(post.getTitle())
+    public static PostResponse of(Post post) {
+        return PostResponse.builder().title(post.getTitle())
                 .writerName(post.getUser().getName())
                 .body(post.getBody())
                 .categoryName(post.getCategory().getName())
