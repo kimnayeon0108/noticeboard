@@ -59,4 +59,12 @@ public class Post {
         this.commentActiveState = commentActiveState;
         this.viewCount = 0;
     }
+
+    public boolean isPasswordEqual(String password) {
+        return this.password.equals(password);
+    }
+
+    public boolean hasPassword() {
+        return this.password != null;
+    }
 }

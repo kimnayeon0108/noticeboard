@@ -87,4 +87,19 @@ public class PostService {
 
         return PagingResponse.of(postDtoPage);
     }
+
+    @Transactional(readOnly = true)
+    public Boolean validatePassword(long postId, PostPasswordRequest postPasswordRequest) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     //Todo: custom 예외
+
+        if (post.hasPassword() && post.isPasswordEqual(postPasswordRequest.getPassword())) {
+            return true;
+        }
+
+        if (!post.isPasswordEqual(postPasswordRequest.getPassword())) {
+            throw new RuntimeException("유효하지 않은 비밀번호");
+        }
+
+        return false;
+    }
 }

@@ -33,4 +33,10 @@ public class PostController extends ApiV1Controller {
     public ResponseEntity<ResponseBody<PagingResponse<PostDto>>> showPostList(PostListRequest postListRequest) {
         return new ResponseEntity<>(ResponseBody.success(postService.getPosts(postListRequest)), HttpStatus.OK);
     }
+
+    //Todo: 비밀번호 체크 api  -> HTTP method POST가 맞을까...? 리소스 추가가 아닌데, url도 이게 맞을까..?
+    @PostMapping("/posts/{postId}/password/validate")
+    public ResponseEntity<ResponseBody<Boolean>> validatePassword(@PathVariable long postId, @RequestBody PostPasswordRequest postPasswordRequest) {
+        return new ResponseEntity<>(ResponseBody.success(postService.validatePassword(postId, postPasswordRequest)), HttpStatus.OK);
+    }
 }
