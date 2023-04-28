@@ -7,18 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class CommentResponse {
+public class ResCommentDto {
 
     private String body;
     private String writerName;
-    private List<CommentResponse> children = new ArrayList<>();
+    private List<ResCommentDto> children = new ArrayList<>();
 
-    public CommentResponse(String body, String writerName) {
+    public ResCommentDto(String body, String writerName) {
         this.body = body;
         this.writerName = writerName;
     }
 
-    public static CommentResponse of(Comment comment) {
-        return new CommentResponse(comment.getBody(), comment.getUser().getName());
+    public static ResCommentDto of(Comment comment) {
+        return new ResCommentDto(comment.getBody(), comment.getUser().getName());
     }
 }

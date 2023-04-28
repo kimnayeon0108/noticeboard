@@ -1,7 +1,7 @@
 package com.example.noticeboard.repository;
 
 import com.example.noticeboard.domain.Post;
-import com.example.noticeboard.dto.PostListRequest;
+import com.example.noticeboard.dto.ReqPostListParamsDto;
 import com.example.noticeboard.type.PostOrderType;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -28,7 +28,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<Post> findAllByConditions(PostListRequest requestParams, Pageable pageable) {
+    public Page<Post> findAllByConditions(ReqPostListParamsDto requestParams, Pageable pageable) {
         List<Post> contents = jpaQueryFactory.selectFrom(post)
                 .join(post.user, user)
                 .fetchJoin()

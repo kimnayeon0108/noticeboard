@@ -3,7 +3,7 @@ package com.example.noticeboard.dto;
 import lombok.Getter;
 
 @Getter
-public class PostPasswordRequest {
+public class ReqValidatePostPasswordDto {
 
     private String password;
 }

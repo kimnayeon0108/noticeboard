@@ -70,12 +70,12 @@ public class Post {
         return this.password != null;
     }
 
-    public void update(PostRequest postRequest, Category category) {
-        this.publicState = postRequest.isPublic();
-        this.password = postRequest.getPassword();
+    public void update(ReqUpdatePostDto reqUpdatePostDto, Category category) {
+        this.publicState = reqUpdatePostDto.isPublic();
+        this.password = reqUpdatePostDto.getPassword();
         this.category = category;
-        this.title = postRequest.getTitle();
-        this.body = postRequest.getBody();
+        this.title = reqUpdatePostDto.getTitle();
+        this.body = reqUpdatePostDto.getBody();
     }
 
     public boolean isSamePost(Long postId) {

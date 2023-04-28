@@ -34,17 +34,17 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
 
-    public PostResponse addPost(PostRequest postRequest, MultipartFile[] files) throws IOException {
-        Category category = categoryRepository.findById(postRequest.getCategoryId()).orElseThrow(() -> new RuntimeException("카테고리 미존재"));
-        User user = userRepository.findById(postRequest.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
+    public ResPostDto addPost(ReqCreatePostDto reqCreatePostDto, MultipartFile[] files) throws IOException {
+        Category category = categoryRepository.findById(reqCreatePostDto.getCategoryId()).orElseThrow(() -> new RuntimeException("카테고리 미존재"));
+        User user = userRepository.findById(reqCreatePostDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
 
         Post post = Post.builder().user(user)
-                .title(postRequest.getTitle())
-                .body(postRequest.getBody())
-                .password(postRequest.getPassword())
-                .publicState(postRequest.isPublic())
+                .title(reqCreatePostDto.getTitle())
+                .body(reqCreatePostDto.getBody())
+                .password(reqCreatePostDto.getPassword())
+                .publicState(reqCreatePostDto.isPublic())
                 .category(category)
-                .commentActiveState(postRequest.isCommentActive())
+                .commentActiveState(reqCreatePostDto.isCommentActive())
                 .build();
 
         postRepository.save(post);
@@ -54,7 +54,7 @@ public class PostService {
             filenames = saveFiles(files, post);
         }
 
-        return PostResponse.of(post, filenames);
+        return ResPostDto.of(post, filenames);
     }
 
     private List<String> saveFiles(MultipartFile[] files, Post post) throws IOException {
@@ -77,50 +77,50 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PagingResponse<PostResponse> getPosts(PostListRequest postListRequest) {
+    public ResPagingDto<ResPostDto> getPosts(ReqPostListParamsDto reqPostListParamsDto) {
 
-        Page<PostResponse> postDtoPage = postRepository.findAllByConditions(postListRequest,
-                        PageRequest.of(postListRequest.getPage() - 1, postListRequest.getPageSize()))
-                .map(PostResponse::of);
+        Page<ResPostDto> postDtoPage = postRepository.findAllByConditions(reqPostListParamsDto,
+                        PageRequest.of(reqPostListParamsDto.getPage() - 1, reqPostListParamsDto.getPageSize()))
+                .map(ResPostDto::of);
 
-        return PagingResponse.of(postDtoPage);
+        return ResPagingDto.of(postDtoPage);
     }
 
     @Transactional(readOnly = true)
-    public Boolean validatePassword(long postId, PostPasswordRequest postPasswordRequest) {
+    public boolean validatePassword(long postId, ReqValidatePostPasswordDto reqValidatePostPasswordDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     //Todo: custom 예외
 
-        if (post.hasPassword() && post.isPasswordEqual(postPasswordRequest.getPassword())) {
+        if (post.hasPassword() && post.isPasswordEqual(reqValidatePostPasswordDto.getPassword())) {
             return true;
         }
 
-        if (!post.isPasswordEqual(postPasswordRequest.getPassword())) {
+        if (!post.isPasswordEqual(reqValidatePostPasswordDto.getPassword())) {
             throw new RuntimeException("유효하지 않은 비밀번호");
         }
 
         return false;
     }
 
-    public PostResponse getPost(long postId) {
+    public ResPostDto getPost(long postId) {
         postRepository.updateViewCount(postId);
 
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     //Todo: custom 예외
 
-        return PostResponse.of(post);
+        return ResPostDto.of(post);
     }
 
-    public PostResponse updatePost(long postId, PostRequest postRequest, MultipartFile[] files) throws IOException {
+    public ResPostDto updatePost(long postId, ReqUpdatePostDto reqUpdatePostDto, MultipartFile[] files) throws IOException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     //Todo: custom 예외
-        User user = userRepository.findById(postRequest.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
+        User user = userRepository.findById(reqUpdatePostDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
 
         if (!user.isPostWriter(post.getUser().getId())) {
             throw new RuntimeException("본인의 게시글만 수정 가능");
         }
 
-        Category category = categoryRepository.findById(postRequest.getCategoryId()).orElseThrow(() -> new RuntimeException("카테고리 미존재"));
-        post.update(postRequest, category);
+        Category category = categoryRepository.findById(reqUpdatePostDto.getCategoryId()).orElseThrow(() -> new RuntimeException("카테고리 미존재"));
+        post.update(reqUpdatePostDto, category);
 
-        // 게시글 파일 삭제
+        // 기존 게시글 파일 삭제
         List<PostFile> postFiles = postFileRepository.findAllByPostId(postId);
         postFiles.forEach(PostFile::delete);
 
@@ -129,6 +129,6 @@ public class PostService {
             filenames = saveFiles(files, post);
         }
 
-        return PostResponse.of(post, filenames);
+        return ResPostDto.of(post, filenames);
     }
 }

@@ -3,8 +3,8 @@ package com.example.noticeboard.service;
 import com.example.noticeboard.domain.Comment;
 import com.example.noticeboard.domain.Post;
 import com.example.noticeboard.domain.User;
-import com.example.noticeboard.dto.CommentRequest;
-import com.example.noticeboard.dto.CommentResponse;
+import com.example.noticeboard.dto.ReqCreateCommentDto;
+import com.example.noticeboard.dto.ResCommentDto;
 import com.example.noticeboard.repository.CommentRepository;
 import com.example.noticeboard.repository.PostRepository;
 import com.example.noticeboard.repository.UserRepository;
@@ -26,15 +26,15 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public List<CommentResponse> addComment(long postId, CommentRequest commentRequest) {
+    public List<ResCommentDto> addComment(long postId, ReqCreateCommentDto reqCreateCommentDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));
-        User user = userRepository.findById(commentRequest.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
+        User user = userRepository.findById(reqCreateCommentDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
 
-        Comment comment = new Comment(post, user, commentRequest.getBody());
+        Comment comment = new Comment(post, user, reqCreateCommentDto.getBody());
 
         // parentComment id가 있다면 조회
-        if (commentRequest.getParentCommentId() != null) {
-            Comment parentComment = commentRepository.findById(commentRequest.getParentCommentId()).orElseThrow(() -> new RuntimeException("댓글 미존재"));  //Todo: custom exception
+        if (reqCreateCommentDto.getParentCommentId() != null) {
+            Comment parentComment = commentRepository.findById(reqCreateCommentDto.getParentCommentId()).orElseThrow(() -> new RuntimeException("댓글 미존재"));  //Todo: custom exception
 
             if (!comment.getPost().isSamePost(parentComment.getPost().getId())) {
                 throw new RuntimeException("댓글의 게시글이 같아야 대댓글 작성 가능");
@@ -47,22 +47,23 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> getComments(long postId) {
-        List<Comment> comments = commentRepository.findAllByPostId(postId);
+    public List<ResCommentDto> getComments(long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     // 게시글 존재 여부 검증
+        List<Comment> comments = commentRepository.findAllByPostId(post.getId());
 
-        List<CommentResponse> commentResponses = new ArrayList<>();
-        Map<Long, CommentResponse> map = new HashMap<>();
+        List<ResCommentDto> resCommentDtos = new ArrayList<>();
+        Map<Long, ResCommentDto> map = new HashMap<>();
         comments.forEach(comment -> {
-            CommentResponse commentResponse = CommentResponse.of(comment);
-            map.put(comment.getId(), commentResponse);
+            ResCommentDto resCommentDto = ResCommentDto.of(comment);
+            map.put(comment.getId(), resCommentDto);
 
             // 부모 댓글이 있으면
             if (comment.getParentComment() != null) {
-                map.get(comment.getParentComment().getId()).getChildren().add(commentResponse);
+                map.get(comment.getParentComment().getId()).getChildren().add(resCommentDto);
             } else {
-                commentResponses.add(commentResponse);
+                resCommentDtos.add(resCommentDto);
             }
         });
-        return commentResponses;
+        return resCommentDtos;
     }
 }

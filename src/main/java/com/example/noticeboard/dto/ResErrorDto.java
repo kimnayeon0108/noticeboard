@@ -1,6 +1,6 @@
 package com.example.noticeboard.dto;
 
-public class ErrorResponse {
+public class ResErrorDto {
 
     private int errorCode;
     private String message;

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Builder
 @Getter
-public class PostResponse {
+public class ResPostDto {
 
     private long id;
     private String title;
@@ -23,8 +23,8 @@ public class PostResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static PostResponse of(Post post, List<String> filenames) {
-        return PostResponse.builder().id(post.getId())
+    public static ResPostDto of(Post post, List<String> filenames) {
+        return ResPostDto.builder().id(post.getId())
                 .title(post.getTitle())
                 .writerName(post.getUser().getName())
                 .body(post.getBody())
@@ -36,8 +36,8 @@ public class PostResponse {
                 .build();
     }
 
-    public static PostResponse of(Post post) {
-        return PostResponse.builder().id(post.getId())
+    public static ResPostDto of(Post post) {
+        return ResPostDto.builder().id(post.getId())
                 .title(post.getTitle())
                 .writerName(post.getUser().getName())
                 .body(post.getBody())

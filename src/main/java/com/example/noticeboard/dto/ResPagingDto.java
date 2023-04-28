@@ -2,13 +2,11 @@ package com.example.noticeboard.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.domain.Page;
 
 @Builder
 @Getter
-@Setter
-public class PagingResponse<T> {
+public class ResPagingDto<T> {
 
     private int page;
     private int pageSize;
@@ -17,9 +15,9 @@ public class PagingResponse<T> {
     private long totalElements;
     private T contents;
 
-    public static <T> PagingResponse<T> of(Page<T> page) {
+    public static <T> ResPagingDto<T> of(Page<T> page) {
 
-        return (PagingResponse<T>) PagingResponse.builder()
+        return (ResPagingDto<T>) ResPagingDto.builder()
                 .page(page.getPageable().getPageNumber() + 1)
                 .pageSize(page.getSize())
                 .totalPage(page.getTotalPages())

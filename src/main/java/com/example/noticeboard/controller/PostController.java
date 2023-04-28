@@ -1,11 +1,10 @@
 package com.example.noticeboard.controller;
 
 import com.example.noticeboard.dto.*;
-import com.example.noticeboard.dto.ResponseDto;
 import com.example.noticeboard.service.PostService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,38 +12,40 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-public class PostController extends ApiV1Controller {
+@RequestMapping("/api/v1/posts")
+@ResponseStatus(HttpStatus.OK)
+@Tag(name = "post", description = "post api")
+public class PostController {
 
     private final PostService postService;
 
-    @PostMapping("/posts")
-    public ResponseEntity<ResponseDto<PostResponse>> addPost(
-            @RequestPart(value = "postRequest") PostRequest postRequest,
-            @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) throws IOException {
-        PostResponse postResponse = postService.addPost(postRequest, multipartFiles);
-        return new ResponseEntity<>(ResponseDto.success(postResponse), HttpStatus.OK);
+    @PostMapping
+    public ResponseDto<ResPostDto> addPost(@RequestPart(value = "post") ReqCreatePostDto reqCreatePostDto,
+                                           @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) throws IOException {
+        ResPostDto resPostDto = postService.addPost(reqCreatePostDto, multipartFiles);
+        return ResponseDto.success(resPostDto);
     }
 
-    @GetMapping("/posts")
-    public ResponseEntity<ResponseDto<PagingResponse<PostResponse>>> showPostList(PostListRequest postListRequest) {
-        return new ResponseEntity<>(ResponseDto.success(postService.getPosts(postListRequest)), HttpStatus.OK);
+    @GetMapping
+    public ResponseDto<ResPagingDto<ResPostDto>> showPostList(ReqPostListParamsDto reqPostListParamsDto) {
+        return ResponseDto.success(postService.getPosts(reqPostListParamsDto));
     }
 
-    //Todo: 비밀번호 체크 api  -> HTTP method POST가 맞을까...? 리소스 추가가 아닌데, url도 이게 맞을까..?
-    @PostMapping("/posts/{postId}/password/validate")
-    public ResponseEntity<ResponseDto<Boolean>> validatePassword(@PathVariable long postId, @RequestBody PostPasswordRequest postPasswordRequest) {
-        return new ResponseEntity<>(ResponseDto.success(postService.validatePassword(postId, postPasswordRequest)), HttpStatus.OK);
+    //Todo: validate-password  HTTP method: patch...?
+    @PostMapping("/{postId}/password/validate")
+    public ResponseDto<Boolean> validatePassword(@PathVariable long postId, @RequestBody ReqValidatePostPasswordDto reqValidatePostPasswordDto) {
+        return ResponseDto.success(postService.validatePassword(postId, reqValidatePostPasswordDto));
     }
 
-    @GetMapping("/posts/{postId}")
-    public ResponseEntity<ResponseDto<PostResponse>> showPostDetail(@PathVariable long postId) {
-        return new ResponseEntity<>(ResponseDto.success(postService.getPost(postId)), HttpStatus.OK);
+    @GetMapping("/{postId}")
+    public ResponseDto<ResPostDto> showPostDetail(@PathVariable long postId) {
+        return ResponseDto.success(postService.getPost(postId));
     }
 
-    @PutMapping("/posts/{postId}")
-    public ResponseEntity<ResponseDto<PostResponse>> editPost(@PathVariable long postId,
-                                                              @RequestPart(value = "postRequest") PostRequest postRequest,
-                                                              @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) throws IOException {
-        return new ResponseEntity<>(ResponseDto.success(postService.updatePost(postId, postRequest, multipartFiles)), HttpStatus.OK);
+    @PutMapping("/{postId}")
+    public ResponseDto<ResPostDto> editPost(@PathVariable long postId,
+                                            @RequestPart(value = "post") ReqUpdatePostDto reqUpdatePostDto,
+                                            @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) throws IOException {
+        return ResponseDto.success(postService.updatePost(postId, reqUpdatePostDto, multipartFiles));
     }
 }
