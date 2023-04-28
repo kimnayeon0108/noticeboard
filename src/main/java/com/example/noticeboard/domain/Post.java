@@ -76,4 +76,8 @@ public class Post {
         this.title = postRequest.getTitle();
         this.body = postRequest.getBody();
     }
+
+    public boolean isSamePost(Long postId) {
+        return this.id == postId;
+    }
 }
