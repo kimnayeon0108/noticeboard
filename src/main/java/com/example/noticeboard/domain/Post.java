@@ -1,6 +1,7 @@
 package com.example.noticeboard.domain;
 
-import com.example.noticeboard.dto.PostRequest;
+import com.example.noticeboard.dto.ReqUpdatePostDto;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "post")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Post {
 
