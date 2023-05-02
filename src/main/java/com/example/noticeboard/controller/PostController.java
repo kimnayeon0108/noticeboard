@@ -27,7 +27,7 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseDto<ResPagingDto<ResPostDto>> showPostList(ReqPostListParamsDto reqPostListParamsDto) {
+    public ResponseDto<ResPagingDto<ResPostDto>> showPostList(@ModelAttribute ReqPostListParamsDto reqPostListParamsDto) {
         return ResponseDto.success(postService.getPosts(reqPostListParamsDto));
     }
 
