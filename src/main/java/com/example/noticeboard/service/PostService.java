@@ -113,7 +113,7 @@ public class PostService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     //Todo: custom 예외
         User user = userRepository.findById(reqUpdatePostDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
 
-        if (!user.isPostWriter(post.getUser().getId())) {
+        if (!user.isWriter(post.getUser().getId())) {
             throw new RuntimeException("본인의 게시글만 수정 가능");
         }
 

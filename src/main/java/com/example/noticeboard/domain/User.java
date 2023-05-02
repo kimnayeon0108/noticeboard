@@ -29,7 +29,7 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public boolean isPostWriter(Long userId) {
+    public boolean isWriter(long userId) {
         return this.id == userId;
     }
 }

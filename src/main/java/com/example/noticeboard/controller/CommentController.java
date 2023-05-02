@@ -1,6 +1,7 @@
 package com.example.noticeboard.controller;
 
 import com.example.noticeboard.dto.ReqCreateCommentDto;
+import com.example.noticeboard.dto.ReqUpdateCommentDto;
 import com.example.noticeboard.dto.ResCommentDto;
 import com.example.noticeboard.dto.ResponseDto;
 import com.example.noticeboard.service.CommentService;
@@ -28,5 +29,10 @@ public class CommentController {
     @GetMapping
     public ResponseDto<List<ResCommentDto>> showCommentList(@PathVariable long postId) {
         return ResponseDto.success(commentService.getComments(postId));
+    }
+
+    @PutMapping("/{commentId}")
+    public ResponseDto<List<ResCommentDto>> editComment(@PathVariable long postId, @PathVariable long commentId, @RequestBody ReqUpdateCommentDto reqUpdateCommentDto) {
+        return ResponseDto.success(commentService.updateComment(postId, commentId, reqUpdateCommentDto));
     }
 }

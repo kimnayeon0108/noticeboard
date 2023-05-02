@@ -4,6 +4,7 @@ import com.example.noticeboard.domain.Comment;
 import com.example.noticeboard.domain.Post;
 import com.example.noticeboard.domain.User;
 import com.example.noticeboard.dto.ReqCreateCommentDto;
+import com.example.noticeboard.dto.ReqUpdateCommentDto;
 import com.example.noticeboard.dto.ResCommentDto;
 import com.example.noticeboard.repository.CommentRepository;
 import com.example.noticeboard.repository.PostRepository;
@@ -65,5 +66,23 @@ public class CommentService {
             }
         });
         return resCommentDtos;
+    }
+
+    public List<ResCommentDto> updateComment(long postId, long commentId, ReqUpdateCommentDto reqUpdateCommentDto) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));
+        User user = userRepository.findById(reqUpdateCommentDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RuntimeException("댓글 미존재"));
+
+        if (!comment.getPost().isSamePost(post.getId())) {
+            throw new RuntimeException("게시글 불일치");
+        }
+
+        if (!comment.getUser().isWriter(user.getId())) {
+            throw new RuntimeException("작성자 불일치");
+        }
+
+        comment.updateBody(reqUpdateCommentDto.getBody());
+
+        return getComments(postId);
     }
 }

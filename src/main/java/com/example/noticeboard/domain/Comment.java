@@ -48,4 +48,8 @@ public class Comment {
     public void updateParentComment(Comment parentComment) {
         this.parentComment = parentComment;
     }
+
+    public void updateBody(String body) {
+        this.body = body;
+    }
 }
