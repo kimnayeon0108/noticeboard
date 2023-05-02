@@ -1,6 +1,6 @@
 package com.example.noticeboard.domain;
 
-import com.example.noticeboard.dto.ReqUpdatePostDto;
+import com.example.noticeboard.dto.request.ReqUpdatePostDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,8 +47,7 @@ public class Post {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany
-    @JoinColumn(name = "post_id")
+    @OneToMany(mappedBy = "post")
     private List<PostFile> postFiles = new ArrayList<>();
 
     @Builder

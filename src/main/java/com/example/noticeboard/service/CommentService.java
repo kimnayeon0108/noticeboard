@@ -3,9 +3,10 @@ package com.example.noticeboard.service;
 import com.example.noticeboard.domain.Comment;
 import com.example.noticeboard.domain.Post;
 import com.example.noticeboard.domain.User;
-import com.example.noticeboard.dto.ReqCreateCommentDto;
-import com.example.noticeboard.dto.ReqUpdateCommentDto;
-import com.example.noticeboard.dto.ResCommentDto;
+import com.example.noticeboard.dto.request.ReqCreateCommentDto;
+import com.example.noticeboard.dto.request.ReqDeleteCommentDto;
+import com.example.noticeboard.dto.request.ReqUpdateCommentDto;
+import com.example.noticeboard.dto.response.ResCommentDto;
 import com.example.noticeboard.repository.CommentRepository;
 import com.example.noticeboard.repository.PostRepository;
 import com.example.noticeboard.repository.UserRepository;
@@ -84,5 +85,26 @@ public class CommentService {
         comment.updateBody(reqUpdateCommentDto.getBody());
 
         return getComments(postId);
+    }
+
+    public void deleteComment(long postId, long commentId, ReqDeleteCommentDto reqDeleteCommentDto) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));
+        User user = userRepository.findById(reqDeleteCommentDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RuntimeException("댓글 미존재"));
+
+        if (!comment.getPost().isSamePost(post.getId())) {
+            throw new RuntimeException("게시글 불일치");
+        }
+
+        if (!comment.getUser().isWriter(user.getId())) {
+            throw new RuntimeException("작성자 불일치");
+        }
+
+        int childrenCommentCount = comment.getComments().size();
+        if (childrenCommentCount > 0) {
+            throw new RuntimeException("대댓글이 있는 경우 삭제 불가");
+        }
+
+        commentRepository.deleteById(commentId);
     }
 }

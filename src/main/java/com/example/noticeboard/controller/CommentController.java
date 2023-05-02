@@ -1,9 +1,10 @@
 package com.example.noticeboard.controller;
 
-import com.example.noticeboard.dto.ReqCreateCommentDto;
-import com.example.noticeboard.dto.ReqUpdateCommentDto;
-import com.example.noticeboard.dto.ResCommentDto;
-import com.example.noticeboard.dto.ResponseDto;
+import com.example.noticeboard.dto.request.ReqCreateCommentDto;
+import com.example.noticeboard.dto.request.ReqDeleteCommentDto;
+import com.example.noticeboard.dto.request.ReqUpdateCommentDto;
+import com.example.noticeboard.dto.response.ResCommentDto;
+import com.example.noticeboard.dto.response.ResponseDto;
 import com.example.noticeboard.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,5 +35,11 @@ public class CommentController {
     @PutMapping("/{commentId}")
     public ResponseDto<List<ResCommentDto>> editComment(@PathVariable long postId, @PathVariable long commentId, @RequestBody ReqUpdateCommentDto reqUpdateCommentDto) {
         return ResponseDto.success(commentService.updateComment(postId, commentId, reqUpdateCommentDto));
+    }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseDto<Void> deleteComment(@PathVariable long postId, @PathVariable long commentId, @RequestBody ReqDeleteCommentDto reqDeleteCommentDto) {
+        commentService.deleteComment(postId, commentId, reqDeleteCommentDto);
+        return ResponseDto.success(null);
     }
 }
