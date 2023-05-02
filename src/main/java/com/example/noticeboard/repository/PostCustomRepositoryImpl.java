@@ -8,6 +8,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -59,19 +60,19 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
     private BooleanExpression titleContains(String title) {
-        return title != null ? post.title.contains(title) : null;
+        return !StringUtils.isBlank(title) ? post.title.contains(title) : null;
     }
 
     private BooleanExpression userNameEq(String userName) {
-        return userName != null ? user.name.eq(userName) : null;
+        return !StringUtils.isBlank(userName) ? user.name.eq(userName) : null;
     }
 
     private BooleanExpression bodyContains(String body) {
-        return body != null ? post.body.contains(body) : null;
+        return !StringUtils.isBlank(body) ? post.body.contains(body) : null;
     }
 
     private BooleanExpression categoryNameEq(String categoryName) {
-        return categoryName != null ? category.name.eq(categoryName) : null;
+        return !StringUtils.isBlank(categoryName) ? category.name.eq(categoryName) : null;
     }
 
     private OrderSpecifier[] getListOrderSpecifier(PostOrderType postOrder) {
