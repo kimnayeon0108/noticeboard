@@ -1,14 +1,8 @@
 package com.example.noticeboard.service;
 
-import com.example.noticeboard.domain.Category;
-import com.example.noticeboard.domain.Post;
-import com.example.noticeboard.domain.PostFile;
-import com.example.noticeboard.domain.User;
+import com.example.noticeboard.domain.*;
 import com.example.noticeboard.dto.*;
-import com.example.noticeboard.repository.CategoryRepository;
-import com.example.noticeboard.repository.PostFileRepository;
-import com.example.noticeboard.repository.PostRepository;
-import com.example.noticeboard.repository.UserRepository;
+import com.example.noticeboard.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +27,7 @@ public class PostService {
     private final PostFileRepository postFileRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     public ResPostDto addPost(ReqCreatePostDto reqCreatePostDto, MultipartFile[] files) throws IOException {
         Category category = categoryRepository.findById(reqCreatePostDto.getCategoryId()).orElseThrow(() -> new RuntimeException("카테고리 미존재"));
@@ -121,8 +116,7 @@ public class PostService {
         post.update(reqUpdatePostDto, category);
 
         // 기존 게시글 파일 삭제
-        List<PostFile> postFiles = postFileRepository.findAllByPostId(postId);
-        postFiles.forEach(PostFile::delete);
+        postFileRepository.deleteAllByPostId(postId);
 
         List<String> filenames = new ArrayList<>();
         if (files != null) {
@@ -130,5 +124,21 @@ public class PostService {
         }
 
         return ResPostDto.of(post, filenames);
+    }
+
+    public void deletePost(ReqPostDeleteDto reqPostDeleteDto) {
+        List<Post> posts = postRepository.findAllByIdIn(reqPostDeleteDto.getPostIds());
+        User user = userRepository.findById(reqPostDeleteDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
+
+        posts.forEach(post -> {
+            if (!user.isWriter(post.getUser().getId())) {
+                throw new RuntimeException("본인의 게시글만 삭제 가능");
+            }
+            postFileRepository.deleteAllByPostId(post.getId());
+
+            commentRepository.deleteAllByPostId(post.getId());
+        });
+
+        postRepository.deleteAllById(reqPostDeleteDto.getPostIds());
     }
 }

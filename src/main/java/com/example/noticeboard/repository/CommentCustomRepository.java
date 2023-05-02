@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface CommentCustomRepository {
 
-    List<Comment> findAllByPostId(long postId);
+    List<Comment> findAllByPostIdOrderByDepth(long postId);
 }

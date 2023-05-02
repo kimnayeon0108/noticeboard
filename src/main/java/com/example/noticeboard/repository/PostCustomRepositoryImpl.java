@@ -41,7 +41,6 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                         userNameEq(requestParams.getWriter()),
                         bodyContains(requestParams.getBody()),
                         categoryNameEq(requestParams.getCategoryName()),
-                        post.isDeleted.isFalse(),
                         post.publicState.isTrue())
                 .orderBy(getListOrderSpecifier(requestParams.getPostOrder()))
                 .limit(pageable.getPageSize())

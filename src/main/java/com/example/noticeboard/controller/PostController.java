@@ -48,4 +48,10 @@ public class PostController {
                                             @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) throws IOException {
         return ResponseDto.success(postService.updatePost(postId, reqUpdatePostDto, multipartFiles));
     }
+
+    @DeleteMapping
+    public ResponseDto<Void> deletePost(@RequestBody ReqPostDeleteDto reqDeleteDto) {
+        postService.deletePost(reqDeleteDto);
+        return ResponseDto.success(null);
+    }
 }

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.util.List;
 @Table(name = "post")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Where(clause = "is_deleted = false")
 public class Post {
 
     @Id
@@ -36,8 +38,8 @@ public class Post {
     private boolean publicState;
     private String password;
     private boolean commentActiveState;
-    private int viewCount;
-    private boolean isDeleted;
+    private int viewCount = 0;
+    private boolean isDeleted = false;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -50,7 +50,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<ResCommentDto> getComments(long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     // 게시글 존재 여부 검증
-        List<Comment> comments = commentRepository.findAllByPostId(post.getId());
+        List<Comment> comments = commentRepository.findAllByPostIdOrderByDepth(post.getId());
 
         List<ResCommentDto> resCommentDtos = new ArrayList<>();
         Map<Long, ResCommentDto> map = new HashMap<>();

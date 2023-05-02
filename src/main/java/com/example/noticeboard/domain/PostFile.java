@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "post_file")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Where(clause = "is_deleted = false")
 public class PostFile {
 
     @Id
@@ -24,7 +26,7 @@ public class PostFile {
 
     private String filename;
     private String contentType;
-    private boolean isDeleted;
+    private boolean isDeleted = false;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -33,11 +35,5 @@ public class PostFile {
         this.post = post;
         this.filename = filename;
         this.contentType = contentType;
-        this.isDeleted = false;
-    }
-
-    public void delete() {
-        this.isDeleted = true;
-        this.post = null;
     }
 }
