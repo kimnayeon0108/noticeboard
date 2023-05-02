@@ -1,7 +1,9 @@
 package com.example.noticeboard.service;
 
 import com.example.noticeboard.domain.*;
-import com.example.noticeboard.dto.*;
+import com.example.noticeboard.dto.request.*;
+import com.example.noticeboard.dto.response.ResPagingDto;
+import com.example.noticeboard.dto.response.ResPostDto;
 import com.example.noticeboard.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

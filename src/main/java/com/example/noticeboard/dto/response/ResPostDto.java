@@ -1,4 +1,4 @@
-package com.example.noticeboard.dto;
+package com.example.noticeboard.dto.response;
 
 import com.example.noticeboard.domain.Post;
 import com.example.noticeboard.domain.PostFile;

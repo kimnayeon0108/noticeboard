@@ -1,4 +1,4 @@
-package com.example.noticeboard.dto;
+package com.example.noticeboard.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,6 +1,9 @@
 package com.example.noticeboard.controller;
 
-import com.example.noticeboard.dto.*;
+import com.example.noticeboard.dto.request.*;
+import com.example.noticeboard.dto.response.ResPagingDto;
+import com.example.noticeboard.dto.response.ResPostDto;
+import com.example.noticeboard.dto.response.ResponseDto;
 import com.example.noticeboard.service.PostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

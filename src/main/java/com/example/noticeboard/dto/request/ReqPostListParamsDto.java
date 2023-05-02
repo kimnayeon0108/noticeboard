@@ -1,4 +1,4 @@
-package com.example.noticeboard.dto;
+package com.example.noticeboard.dto.request;
 
 import com.example.noticeboard.type.PostOrderType;
 import io.swagger.v3.oas.annotations.media.Schema;

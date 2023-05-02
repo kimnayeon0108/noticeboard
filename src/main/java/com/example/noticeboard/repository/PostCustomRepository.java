@@ -1,7 +1,7 @@
 package com.example.noticeboard.repository;
 
 import com.example.noticeboard.domain.Post;
-import com.example.noticeboard.dto.ReqPostListParamsDto;
+import com.example.noticeboard.dto.request.ReqPostListParamsDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
