@@ -32,6 +32,10 @@ public class CommentService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));
         User user = userRepository.findById(reqCreateCommentDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
 
+        if (!post.isCommentActiveState()) {
+            throw new RuntimeException("댓글을 작성할 수 없는 게시글입니다.");
+        }
+
         Comment comment = new Comment(post, user, reqCreateCommentDto.getBody());
 
         // parentComment id가 있다면 조회
