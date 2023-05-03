@@ -72,7 +72,7 @@ public class Post {
     }
 
     public void update(ReqUpdatePostDto reqUpdatePostDto, Category category) {
-        this.publicState = reqUpdatePostDto.isPublic();
+        this.publicState = reqUpdatePostDto.getIsPublic();
         this.password = reqUpdatePostDto.getPassword();
         this.category = category;
         this.title = reqUpdatePostDto.getTitle();

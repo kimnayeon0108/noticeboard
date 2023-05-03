@@ -31,7 +31,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
-    public ResPostDto addPost(ReqCreatePostDto reqCreatePostDto, MultipartFile[] files) throws IOException {
+    public ResPostDto addPost(ReqCreatePostDto reqCreatePostDto) throws IOException {
         Category category = categoryRepository.findById(reqCreatePostDto.getCategoryId()).orElseThrow(() -> new RuntimeException("카테고리 미존재"));
         User user = userRepository.findById(reqCreatePostDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
 
@@ -39,16 +39,16 @@ public class PostService {
                 .title(reqCreatePostDto.getTitle())
                 .body(reqCreatePostDto.getBody())
                 .password(reqCreatePostDto.getPassword())
-                .publicState(reqCreatePostDto.isPublic())
+                .publicState(reqCreatePostDto.getIsPublic())
                 .category(category)
-                .commentActiveState(reqCreatePostDto.isCommentActive())
+                .commentActiveState(reqCreatePostDto.getIsCommentActive())
                 .build();
 
         postRepository.save(post);
 
         List<String> filenames = new ArrayList<>();
-        if (files != null) {
-            filenames = saveFiles(files, post);
+        if (reqCreatePostDto.getMultipartFiles() != null) {
+            filenames = saveFiles(reqCreatePostDto.getMultipartFiles(), post);
         }
 
         return ResPostDto.of(post, filenames);
@@ -106,7 +106,7 @@ public class PostService {
         return ResPostDto.of(post);
     }
 
-    public ResPostDto updatePost(long postId, ReqUpdatePostDto reqUpdatePostDto, MultipartFile[] files) throws IOException {
+    public ResPostDto updatePost(long postId, ReqUpdatePostDto reqUpdatePostDto) throws IOException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     //Todo: custom 예외
         User user = userRepository.findById(reqUpdatePostDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
 
@@ -121,8 +121,8 @@ public class PostService {
         postFileRepository.deleteAllByPostId(postId);
 
         List<String> filenames = new ArrayList<>();
-        if (files != null) {
-            filenames = saveFiles(files, post);
+        if (reqUpdatePostDto.getMultipartFiles() != null) {
+            filenames = saveFiles(reqUpdatePostDto.getMultipartFiles(), post);
         }
 
         return ResPostDto.of(post, filenames);

@@ -8,13 +8,11 @@ import com.example.noticeboard.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -30,18 +28,8 @@ public class PostController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "게시글 작성", description = "게시글 작성 api", tags = "post")
-    public ResponseDto<ResPostDto> addPost(@Valid @RequestPart(value = "post") @Parameter(schema = @Schema(type = "string", format = "binary"),
-            description = " &nbsp;json 파일을 업로드해 주세요. <br>&nbsp;example: {<br>" +
-                    " &nbsp;\"userId\": 1,<br>" +
-                    " &nbsp;\"isPublic\": true,<br>" +
-                    " &nbsp;\"password\": \"1234\",<br>" +
-                    " &nbsp;\"categoryId\": 3,<br>" +
-                    " &nbsp;\"title\": \"제목\",<br>" +
-                    " &nbsp;\"body\": \"게시글 내용\",<br>" +
-                    " &nbsp;\"isCommentActive\": true<br>" +
-                    "}") ReqCreatePostDto reqCreatePostDto,
-                                           @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) throws IOException {
-        ResPostDto resPostDto = postService.addPost(reqCreatePostDto, multipartFiles);
+    public ResponseDto<ResPostDto> addPost(@Valid @ModelAttribute ReqCreatePostDto reqCreatePostDto) throws IOException {
+        ResPostDto resPostDto = postService.addPost(reqCreatePostDto);
         return ResponseDto.success(resPostDto);
     }
 
@@ -67,17 +55,8 @@ public class PostController {
     @PutMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "게시글 수정", description = "게시글 수정 api", tags = "post")
     public ResponseDto<ResPostDto> editPost(@Parameter(in = ParameterIn.PATH, description = "게시글 id") @PathVariable long postId,
-                                            @Valid @RequestPart(value = "post") @Parameter(schema = @Schema(type = "string", format = "binary"),
-                                                    description = " &nbsp;json 파일을 업로드해 주세요. <br>&nbsp;example: {<br>" +
-                                                            " &nbsp;\"userId\": 1,<br>" +
-                                                            " &nbsp;\"isPublic\": true,<br>" +
-                                                            " &nbsp;\"password\": \"1234\",<br>" +
-                                                            " &nbsp;\"categoryId\": 3,<br>" +
-                                                            " &nbsp;\"title\": \"제목\",<br>" +
-                                                            " &nbsp;\"body\": \"게시글 내용\",<br>" +
-                                                            "}") ReqUpdatePostDto reqUpdatePostDto,
-                                            @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) throws IOException {
-        return ResponseDto.success(postService.updatePost(postId, reqUpdatePostDto, multipartFiles));
+                                            @Valid @ModelAttribute ReqUpdatePostDto reqUpdatePostDto) throws IOException {
+        return ResponseDto.success(postService.updatePost(postId, reqUpdatePostDto));
     }
 
     @DeleteMapping
