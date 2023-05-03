@@ -2,6 +2,7 @@ package com.example.noticeboard.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Schema(description = "게시글 삭제 DTO")
 @Getter
+@Setter
 public class ReqDeletePostDto {
 
     @NotNull

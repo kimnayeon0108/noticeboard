@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Builder
 @Getter
 public class ResPagingDto<T> {
@@ -13,7 +16,7 @@ public class ResPagingDto<T> {
     private int totalPage;
     private boolean hasNext;
     private long totalElements;
-    private T contents;
+    private List<T> contents;
 
     public static <T> ResPagingDto<T> of(Page<T> page) {
 
@@ -23,7 +26,7 @@ public class ResPagingDto<T> {
                 .totalPage(page.getTotalPages())
                 .hasNext(page.hasNext())
                 .totalElements(page.getTotalElements())
-                .contents(page.getContent())
+                .contents(Arrays.asList(page.getContent().toArray()))
                 .build();
     }
 }
