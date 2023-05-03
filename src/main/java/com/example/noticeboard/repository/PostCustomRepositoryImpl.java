@@ -38,11 +38,11 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .leftJoin(post.postFiles, postFile)
                 .distinct()
                 .where(titleContains(requestParams.getTitle()),
-                        userNameEq(requestParams.getWriter()),
+                        userNameEq(requestParams.getWriterName()),
                         bodyContains(requestParams.getBody()),
                         categoryNameEq(requestParams.getCategoryName()),
                         post.publicState.isTrue())
-                .orderBy(getListOrderSpecifier(requestParams.getPostOrder()))
+                .orderBy(getListOrderSpecifier(requestParams.getOrderBy()))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
                 .fetch();
@@ -50,7 +50,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         long totalSize = jpaQueryFactory.select(post.count())
                 .from(post)
                 .where(titleContains(requestParams.getTitle()),
-                        userNameEq(requestParams.getWriter()),
+                        userNameEq(requestParams.getWriterName()),
                         bodyContains(requestParams.getBody()),
                         categoryNameEq(requestParams.getCategoryName()))
                 .fetchOne();

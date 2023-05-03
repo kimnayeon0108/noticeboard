@@ -1,25 +1,36 @@
 package com.example.noticeboard.dto.request;
 
 import com.example.noticeboard.type.PostOrderType;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
+import org.springdoc.api.annotations.ParameterObject;
 
 @Getter
 @Setter
+@ParameterObject
 public class ReqPostListParamsDto {
 
-    private String writer;
+    @Parameter(description = "작성자 이름 (필터)")
+    private String writerName;
+
+    @Parameter(description = "제목 (검색)")
     private String title;
+
+    @Parameter(description = "내용 (검색)")
     private String body;
+
+    @Parameter(description = "카테고리 이름 (필터)")
     private String categoryName;
 
-    @Schema(description = "정렬 기준", nullable = false, allowableValues = {"CREATED_AT", "UPDATED_AT", "VIEW_COUNT"})
-    private PostOrderType postOrder = PostOrderType.CREATED_AT;
+    @Parameter(required = true, description = "정렬 기준")
+    @NonNull
+    private PostOrderType orderBy = PostOrderType.CREATED_AT;
 
-    @Schema(description = "페이지", defaultValue = "1")
+    @Parameter(required = true, description = "페이지")
     private int page = 1;
 
-    @Schema(description = "페이지 size", defaultValue = "20")
+    @Parameter(required = true, description = "페이지 size")
     private int pageSize = 20;
 }

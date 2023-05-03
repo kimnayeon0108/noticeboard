@@ -128,9 +128,9 @@ public class PostService {
         return ResPostDto.of(post, filenames);
     }
 
-    public void deletePost(ReqPostDeleteDto reqPostDeleteDto) {
-        List<Post> posts = postRepository.findAllByIdIn(reqPostDeleteDto.getPostIds());
-        User user = userRepository.findById(reqPostDeleteDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
+    public void deletePost(ReqDeletePostDto reqDeletePostDto) {
+        List<Post> posts = postRepository.findAllByIdIn(reqDeletePostDto.getPostIds());
+        User user = userRepository.findById(reqDeletePostDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
 
         posts.forEach(post -> {
             if (!user.isWriter(post.getUser().getId())) {
@@ -141,6 +141,6 @@ public class PostService {
             commentRepository.deleteAllByPostId(post.getId());
         });
 
-        postRepository.deleteAllById(reqPostDeleteDto.getPostIds());
+        postRepository.deleteAllById(reqDeletePostDto.getPostIds());
     }
 }
