@@ -30,10 +30,9 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public List<ResCommentDto> addComment(long postId, ReqCreateCommentDto reqCreateCommentDto) {
+    public List<ResCommentDto> addComment (long postId, ReqCreateCommentDto reqCreateCommentDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new BaseException(ErrorCode.POST_NOT_FOUND));
-        User user = userRepository.findById(reqCreateCommentDto.getUserId())
-                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(reqCreateCommentDto.getUserId()).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         if (!post.isCommentActiveState()) {
             throw new BaseException(ErrorCode.INACTIVE_COMMENT_POST);
@@ -43,8 +42,7 @@ public class CommentService {
 
         // parentComment id가 있다면 조회
         if (reqCreateCommentDto.getParentCommentId() != null) {
-            Comment parentComment = commentRepository.findById(reqCreateCommentDto.getParentCommentId())
-                    .orElseThrow(() -> new BaseException(ErrorCode.COMMENT_NOT_FOUND));
+            Comment parentComment = commentRepository.findById(reqCreateCommentDto.getParentCommentId()).orElseThrow(() -> new BaseException(ErrorCode.COMMENT_NOT_FOUND));
 
             if (!comment.getPost().isSamePost(parentComment.getPost().getId())) {
                 throw new BaseException(ErrorCode.POST_NOT_MATCH);
@@ -57,7 +55,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResCommentDto> getComments(long postId) {
+    public List<ResCommentDto> getComments (long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new BaseException(ErrorCode.POST_NOT_FOUND));     // 게시글 존재 여부 검증
         List<Comment> comments = commentRepository.findAllByPostIdOrderByDepth(post.getId());
 
@@ -78,10 +76,9 @@ public class CommentService {
         return resCommentDtos;
     }
 
-    public List<ResCommentDto> updateComment(long postId, long commentId, ReqUpdateCommentDto reqUpdateCommentDto) {
+    public List<ResCommentDto> updateComment (long postId, long commentId, ReqUpdateCommentDto reqUpdateCommentDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new BaseException(ErrorCode.POST_NOT_FOUND));
-        User user = userRepository.findById(reqUpdateCommentDto.getUserId())
-                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(reqUpdateCommentDto.getUserId()).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new BaseException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getPost().isSamePost(post.getId())) {
