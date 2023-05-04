@@ -13,4 +13,8 @@ public class ResponseDto<T> {
     public static <T> ResponseDto<T> success(T data) {
         return new ResponseDto<>(data, null);
     }
+
+    public static <T> ResponseDto<T> fail(ResErrorDto error) {
+        return new ResponseDto<>(null, error);
+    }
 }

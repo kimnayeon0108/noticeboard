@@ -1,6 +1,7 @@
 package com.example.noticeboard.exception;
 
 import com.example.noticeboard.dto.response.ResErrorDto;
+import com.example.noticeboard.dto.response.ResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -19,17 +20,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResErrorDto handleBaseException(BaseException e) {
-        return ResErrorDto.builder().errorCode(e.getErrorCode()).message(e.getMessage()).build();
+    public ResponseDto<Void> handleBaseException(BaseException e) {
+        ResErrorDto errorDto = ResErrorDto.builder().errorCode(e.getErrorCode()).message(e.getMessage()).build();
+        return ResponseDto.fail(errorDto);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResErrorDto handleMethodArgumentNotValidException(BindException e) {     // BindException는 MethodArgumentNotValidException의 조상
+    public ResponseDto<Void> handleMethodArgumentNotValidException(BindException e) {     // BindException는 MethodArgumentNotValidException의 조상
 
         Map<String, String> errors = new HashMap<>();
         e.getBindingResult().getAllErrors().forEach(error -> errors.put(((FieldError) error).getField(), error.getDefaultMessage()));
 
-        return ResErrorDto.builder().message(VALID_ANNOTATION_EXCEPTION_MESSAGE).errors(errors).build();
+        ResErrorDto errorDto = ResErrorDto.builder().message(VALID_ANNOTATION_EXCEPTION_MESSAGE).errors(errors).build();
+        return ResponseDto.fail(errorDto);
     }
 }
