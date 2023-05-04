@@ -1,0 +1,5 @@
+spring:
+  servlet:
+    multipart:
+      location: /apps/noticeboard/fileupdload
+      max-file-size: 100MB

@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### database connection setting ###
-src/main/resources/application-mariadb.yml
+src/main/resources/application-mariadb-local.yml
