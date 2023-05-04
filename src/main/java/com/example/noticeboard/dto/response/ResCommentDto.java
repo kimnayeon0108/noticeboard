@@ -32,4 +32,8 @@ public class ResCommentDto {
     public static ResCommentDto of(Comment comment) {
         return new ResCommentDto(comment.getId(), comment.getBody(), comment.getUser().getName());
     }
+
+    public void addChild(ResCommentDto childComment) {
+        this.children.add(childComment);
+    }
 }

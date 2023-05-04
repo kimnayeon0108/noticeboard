@@ -69,7 +69,8 @@ public class CommentService {
 
             // 부모 댓글이 있으면
             if (comment.getParentComment() != null) {
-                map.get(comment.getParentComment().getId()).getChildren().add(resCommentDto);
+                ResCommentDto parentCommentDto = map.get(comment.getParentComment().getId());
+                parentCommentDto.addChild(resCommentDto);
             } else {
                 resCommentDtos.add(resCommentDto);
             }
