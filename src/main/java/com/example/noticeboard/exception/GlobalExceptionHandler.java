@@ -9,8 +9,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final String VALID_ANNOTATION_EXCEPTION_MESSAGE = "파라미터 혹은 요청 body 값 검증 실패";
 
     @ExceptionHandler(BaseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -18,33 +23,13 @@ public class GlobalExceptionHandler {
         return ResErrorDto.builder().errorCode(e.getErrorCode()).message(e.getMessage()).build();
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResErrorDto handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResErrorDto handleMethodArgumentNotValidException(BindException e) {     // BindException는 MethodArgumentNotValidException의 조상
 
-        StringBuilder builder = new StringBuilder();
-        for (FieldError fieldError : e.getFieldErrors()) {
-            builder.append(fieldError.getField());
-            builder.append("는 ");
-            builder.append(fieldError.getDefaultMessage());
-            builder.append("\n");
-        }
+        Map<String, String> errors = new HashMap<>();
+        e.getBindingResult().getAllErrors().forEach(error -> errors.put(((FieldError) error).getField(), error.getDefaultMessage()));
 
-        return ResErrorDto.builder().errorCode(ErrorCode.INVALID_REQUEST.getCode()).message(builder.toString()).build();
-    }
-
-    @ExceptionHandler(BindException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResErrorDto handleBindException(BindException e) {
-
-        StringBuilder builder = new StringBuilder();
-        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
-            builder.append(fieldError.getField());
-            builder.append("는 ");
-            builder.append(fieldError.getDefaultMessage());
-            builder.append(" \n ");
-        }
-
-        return ResErrorDto.builder().errorCode(ErrorCode.INVALID_REQUEST.getCode()).message(builder.toString()).build();
+        return ResErrorDto.builder().message(VALID_ANNOTATION_EXCEPTION_MESSAGE).errors(errors).build();
     }
 }

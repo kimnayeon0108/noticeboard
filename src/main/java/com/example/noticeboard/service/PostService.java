@@ -96,7 +96,7 @@ public class PostService {
             return true;
         }
 
-        if (!post.isPasswordEqual(reqValidatePostPasswordDto.getPassword())) {
+        if (!post.hasPassword() || !post.isPasswordEqual(reqValidatePostPasswordDto.getPassword())) {
             throw new BaseException(ErrorCode.INVALID_POST_PASSWORD);
         }
 

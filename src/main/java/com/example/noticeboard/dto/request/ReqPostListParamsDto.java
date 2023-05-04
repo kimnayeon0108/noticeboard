@@ -3,9 +3,10 @@ package com.example.noticeboard.dto.request;
 import com.example.noticeboard.type.PostOrderType;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.springdoc.api.annotations.ParameterObject;
+
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -25,7 +26,7 @@ public class ReqPostListParamsDto {
     private String categoryName;
 
     @Parameter(required = true, description = "정렬 기준")
-    @NonNull
+    @NotNull
     private PostOrderType orderBy = PostOrderType.CREATED_AT;
 
     @Parameter(required = true, description = "페이지")

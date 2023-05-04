@@ -2,9 +2,6 @@ package com.example.noticeboard.exception;
 
 public enum ErrorCode {
 
-    // common
-    INVALID_REQUEST("0001", null),
-
     // user
     USER_NOT_FOUND("0101", "회원이 존재하지 않습니다."),
     USER_NOT_ALLOWED("0102", "유저의 리소스가 아닙니다."),

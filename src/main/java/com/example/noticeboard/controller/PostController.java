@@ -35,7 +35,7 @@ public class PostController {
 
     @GetMapping
     @Operation(summary = "게시글 리스트 조회", description = "게시글의 목록 조회 api", tags = "post")
-    public ResponseDto<ResPagingDto<ResPostDto>> showPostList(@ModelAttribute ReqPostListParamsDto reqPostListParamsDto) {
+    public ResponseDto<ResPagingDto<ResPostDto>> showPostList(@Valid @ModelAttribute ReqPostListParamsDto reqPostListParamsDto) {
         return ResponseDto.success(postService.getPosts(reqPostListParamsDto));
     }
 
