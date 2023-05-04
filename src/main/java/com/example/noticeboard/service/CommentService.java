@@ -97,10 +97,10 @@ public class CommentService {
         return getComments(postId);
     }
 
-    public void deleteComment(long postId, long commentId, ReqDeleteCommentDto reqDeleteCommentDto) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));
-        User user = userRepository.findById(reqDeleteCommentDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RuntimeException("댓글 미존재"));
+    public void deleteComment (long postId, long commentId, ReqDeleteCommentDto reqDeleteCommentDto) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BaseException(ErrorCode.POST_NOT_FOUND));
+        User user = userRepository.findById(reqDeleteCommentDto.getUserId()).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new BaseException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getPost().isSamePost(post.getId())) {
             throw new BaseException(ErrorCode.POST_NOT_MATCH);
