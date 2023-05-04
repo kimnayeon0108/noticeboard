@@ -63,4 +63,8 @@ public class Comment {
     public void updateBody(String body) {
         this.body = body;
     }
+
+    public boolean hasChildren() {
+        return this.comments.size() > 0;
+    }
 }

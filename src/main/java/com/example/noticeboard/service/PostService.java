@@ -1,9 +1,14 @@
 package com.example.noticeboard.service;
 
-import com.example.noticeboard.domain.*;
+import com.example.noticeboard.domain.Category;
+import com.example.noticeboard.domain.Post;
+import com.example.noticeboard.domain.PostFile;
+import com.example.noticeboard.domain.User;
 import com.example.noticeboard.dto.request.*;
 import com.example.noticeboard.dto.response.ResPagingDto;
 import com.example.noticeboard.dto.response.ResPostDto;
+import com.example.noticeboard.exception.BaseException;
+import com.example.noticeboard.exception.ErrorCode;
 import com.example.noticeboard.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,8 +37,8 @@ public class PostService {
     private final CommentRepository commentRepository;
 
     public ResPostDto addPost(ReqCreatePostDto reqCreatePostDto) throws IOException {
-        Category category = categoryRepository.findById(reqCreatePostDto.getCategoryId()).orElseThrow(() -> new RuntimeException("카테고리 미존재"));
-        User user = userRepository.findById(reqCreatePostDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
+        Category category = categoryRepository.findById(reqCreatePostDto.getCategoryId()).orElseThrow(() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND));
+        User user = userRepository.findById(reqCreatePostDto.getUserId()).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         Post post = Post.builder().user(user)
                 .title(reqCreatePostDto.getTitle())
@@ -56,7 +61,7 @@ public class PostService {
 
     private List<String> saveFiles(MultipartFile[] files, Post post) throws IOException {
         if (files.length > 3) {
-            throw new RuntimeException("파일은 최대 3개까지 업로드 가능");       //Todo: custom exception
+            throw new BaseException(ErrorCode.POST_FILE_EXCEEDED);
         }
 
         List<PostFile> postFiles = new ArrayList<>();
@@ -85,14 +90,14 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public boolean validatePassword(long postId, ReqValidatePostPasswordDto reqValidatePostPasswordDto) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     //Todo: custom 예외
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BaseException(ErrorCode.POST_NOT_FOUND));
 
         if (post.hasPassword() && post.isPasswordEqual(reqValidatePostPasswordDto.getPassword())) {
             return true;
         }
 
         if (!post.isPasswordEqual(reqValidatePostPasswordDto.getPassword())) {
-            throw new RuntimeException("유효하지 않은 비밀번호");
+            throw new BaseException(ErrorCode.INVALID_POST_PASSWORD);
         }
 
         return false;
@@ -101,20 +106,20 @@ public class PostService {
     public ResPostDto getPost(long postId) {
         postRepository.updateViewCount(postId);
 
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     //Todo: custom 예외
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BaseException(ErrorCode.POST_NOT_FOUND));
 
         return ResPostDto.of(post);
     }
 
     public ResPostDto updatePost(long postId, ReqUpdatePostDto reqUpdatePostDto) throws IOException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글 미존재"));     //Todo: custom 예외
-        User user = userRepository.findById(reqUpdatePostDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BaseException(ErrorCode.POST_NOT_FOUND));
+        User user = userRepository.findById(reqUpdatePostDto.getUserId()).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         if (!user.isWriter(post.getUser().getId())) {
-            throw new RuntimeException("본인의 게시글만 수정 가능");
+            throw new BaseException(ErrorCode.USER_NOT_ALLOWED);
         }
 
-        Category category = categoryRepository.findById(reqUpdatePostDto.getCategoryId()).orElseThrow(() -> new RuntimeException("카테고리 미존재"));
+        Category category = categoryRepository.findById(reqUpdatePostDto.getCategoryId()).orElseThrow(() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND));
         post.update(reqUpdatePostDto, category);
 
         // 기존 게시글 파일 삭제
@@ -130,11 +135,11 @@ public class PostService {
 
     public void deletePost(ReqDeletePostDto reqDeletePostDto) {
         List<Post> posts = postRepository.findAllByIdIn(reqDeletePostDto.getPostIds());
-        User user = userRepository.findById(reqDeletePostDto.getUserId()).orElseThrow(() -> new RuntimeException("유저 미존재"));
+        User user = userRepository.findById(reqDeletePostDto.getUserId()).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         posts.forEach(post -> {
             if (!user.isWriter(post.getUser().getId())) {
-                throw new RuntimeException("본인의 게시글만 삭제 가능");
+                throw new BaseException(ErrorCode.USER_NOT_ALLOWED);
             }
             postFileRepository.deleteAllByPostId(post.getId());
 
