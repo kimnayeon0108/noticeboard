@@ -1,10 +1,8 @@
 package com.example.noticeboard;
 
-import com.example.noticeboard.dto.request.ReqCreatePostDto;
-import com.example.noticeboard.dto.request.ReqPostListParamsDto;
-import com.example.noticeboard.dto.request.ReqUpdatePostDto;
-import com.example.noticeboard.dto.request.ReqValidatePostPasswordDto;
+import com.example.noticeboard.dto.request.*;
 import com.example.noticeboard.dto.response.ResPostDto;
+import com.example.noticeboard.exception.BaseException;
 import com.example.noticeboard.service.PostService;
 import com.example.noticeboard.type.PostOrderType;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -160,6 +159,27 @@ public class PostServiceTest {
     }
 
     @Test
+    @DisplayName("게시물 수정 실패, 본인의 게시물이 아닌 경우")
+    void editPostFailUserNotMatch() {
+        // given
+        long postId = 1L;
+        ReqUpdatePostDto updatePostDto = new ReqUpdatePostDto();
+        updatePostDto.setCategoryId(3L);
+        updatePostDto.setUserId(2L);
+        updatePostDto.setTitle("수정된 제목");
+        updatePostDto.setBody("수정된 내용");
+        updatePostDto.setIsPublic(true);
+
+        // when
+        BaseException exception = assertThrows(BaseException.class, () -> postService.updatePost(postId, updatePostDto));
+
+        // then
+        assertThat(exception.getErrorCode()).isEqualTo("0102");
+        assertThat(exception.getErrorMessage()).isEqualTo("유저의 리소스가 아닙니다.");
+
+    }
+
+    @Test
     @DisplayName("비밀번호 검증")
     void validatePassword() {
         // given
@@ -172,5 +192,53 @@ public class PostServiceTest {
 
         // then
         assertThat(validated).isTrue();
+    }
+
+    @Test
+    @DisplayName("게시물 삭제 실패, 본인의 게시물이 아닌 경우")
+    void deletePostFailUserNotMatch() {
+        // given
+        ReqDeletePostDto reqDeletePostDto = new ReqDeletePostDto();
+        reqDeletePostDto.setPostIds(List.of(1L));
+        reqDeletePostDto.setUserId(2L);
+
+        // when
+        BaseException exception = assertThrows(BaseException.class, () -> postService.deletePost(reqDeletePostDto));
+
+        // then
+        assertThat(exception.getErrorCode()).isEqualTo("0102");
+        assertThat(exception.getErrorMessage()).isEqualTo("유저의 리소스가 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("비밀번호 검증 실패")
+    void validatePasswordFail() {
+        // given
+        long postId = 1L;
+        ReqValidatePostPasswordDto dto = new ReqValidatePostPasswordDto();
+        dto.setPassword("1111");
+
+        // when
+        BaseException exception = assertThrows(BaseException.class, () -> postService.validatePassword(postId, dto));
+
+        // then
+        assertThat(exception.getErrorCode()).isEqualTo("0203");
+        assertThat(exception.getMessage()).isEqualTo("게시글 비밀번호가 일치하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("비밀번호 검증 실패, 비밀번호가 없는 게시글인 경우")
+    void validatePasswordFailNoPasswordPost() {
+        // given
+        long postId = 4L;
+        ReqValidatePostPasswordDto dto = new ReqValidatePostPasswordDto();
+        dto.setPassword("1111");
+
+        // when
+        BaseException exception = assertThrows(BaseException.class, () -> postService.validatePassword(postId, dto));
+
+        // then
+        assertThat(exception.getErrorCode()).isEqualTo("0203");
+        assertThat(exception.getMessage()).isEqualTo("게시글 비밀번호가 일치하지 않습니다.");
     }
 }
