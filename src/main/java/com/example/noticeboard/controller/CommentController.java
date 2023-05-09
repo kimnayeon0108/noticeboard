@@ -19,7 +19,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/posts/{postId}/comments")
+@RequestMapping("/posts/{postId}/comments")
 @ResponseStatus(HttpStatus.OK)
 @Tag(name = "comment", description = "댓글 api")
 public class CommentController {

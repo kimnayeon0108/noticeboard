@@ -5,3 +5,7 @@ spring:
     properties:
       hibernate:
         default_batch_fetch_size: 100
+
+server:
+  servlet:
+    context-path: /api/v1

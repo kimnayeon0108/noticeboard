@@ -19,8 +19,8 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/posts")
-@ResponseStatus(HttpStatus.OK)
+@RequestMapping("/posts")
+@ResponseStatus(HttpStatus.OK)  // 생성은 201
 @Tag(name = "post", description = "게시글 api")
 public class PostController {
 
