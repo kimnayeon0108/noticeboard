@@ -2,10 +2,12 @@ package com.example.noticeboard.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
+@Setter
 @Schema(description = "댓글 삭제 DTO")
 public class ReqDeleteCommentDto { // Todo:로그인 구현 이후 삭제
 

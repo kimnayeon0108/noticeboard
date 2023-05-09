@@ -1,11 +1,11 @@
 package com.example.noticeboard;
 
 import com.example.noticeboard.dto.request.ReqCreateCommentDto;
+import com.example.noticeboard.dto.request.ReqDeleteCommentDto;
 import com.example.noticeboard.dto.request.ReqUpdateCommentDto;
 import com.example.noticeboard.dto.response.ResCommentDto;
 import com.example.noticeboard.exception.BaseException;
 import com.example.noticeboard.service.CommentService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -54,7 +55,7 @@ public class CommentServiceTest {
         dto.setBody("새로운 댓글");
 
         // when
-        BaseException exception = Assertions.assertThrows(BaseException.class, () -> commentService.addComment(postId, dto));
+        BaseException exception = assertThrows(BaseException.class, () -> commentService.addComment(postId, dto));
 
         // then
         assertThat(exception.getErrorCode()).isEqualTo("0204");
@@ -105,5 +106,22 @@ public class CommentServiceTest {
         // then
         assertThat(resCommentDtos.get(0)
                                  .getBody()).isEqualTo("수정된 댓글 내용");
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패, 대댓글 존재")
+    void deleteCommentFail() {
+        // given
+        long postId = 1L;
+        long commentId = 1L;
+        ReqDeleteCommentDto dto = new ReqDeleteCommentDto();
+        dto.setUserId(1L);
+
+        // when
+        BaseException exception = assertThrows(BaseException.class, () -> commentService.deleteComment(postId, commentId, dto));
+
+        // then
+        assertThat(exception.getErrorCode()).isEqualTo("0302");
+        assertThat(exception.getMessage()).isEqualTo("댓글을 삭제할 수 없습니다.");
     }
 }
