@@ -20,7 +20,6 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/posts")
-@ResponseStatus(HttpStatus.OK)  // 생성은 201
 @Tag(name = "post", description = "게시글 api")
 public class PostController {
 
@@ -28,19 +27,22 @@ public class PostController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "게시글 작성", description = "게시글 작성 api", tags = "post")
-    public ResponseDto<ResPostDto> addPost(@Valid @ModelAttribute ReqCreatePostDto reqCreatePostDto) throws IOException {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto<ResPostDto> addPost(@Valid @ModelAttribute ReqCreatePostDto reqCreatePostDto) throws IOException {       //Todo: request body로 변경
         ResPostDto resPostDto = postService.addPost(reqCreatePostDto);
         return ResponseDto.success(resPostDto);
     }
 
     @GetMapping
     @Operation(summary = "게시글 리스트 조회", description = "게시글의 목록 조회 api", tags = "post")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseDto<ResPagingDto<ResPostDto>> showPostList(@Valid @ModelAttribute ReqPostListParamsDto reqPostListParamsDto) {
         return ResponseDto.success(postService.getPosts(reqPostListParamsDto));
     }
 
     @PostMapping("/{postId}/password/validate")
     @Operation(summary = "게시글 비밀번호 검증", description = "게시글의 비밀번호 검증 api, 작성자가 아닌 유저가 게시글에 접근할 때 호출합니다.", tags = "post")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseDto<Boolean> validatePassword(@Parameter(in = ParameterIn.PATH, description = "게시글 id") @PathVariable long postId,
                                                  @Valid @RequestBody ReqValidatePostPasswordDto reqValidatePostPasswordDto) {
         return ResponseDto.success(postService.validatePassword(postId, reqValidatePostPasswordDto));
@@ -48,12 +50,14 @@ public class PostController {
 
     @GetMapping("/{postId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글 상세 조회 api", tags = "post")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseDto<ResPostDto> showPostDetail(@Parameter(in = ParameterIn.PATH, description = "게시글 id") @PathVariable long postId) {
         return ResponseDto.success(postService.getPost(postId));
     }
 
     @PutMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "게시글 수정", description = "게시글 수정 api", tags = "post")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPostDto> editPost(@Parameter(in = ParameterIn.PATH, description = "게시글 id") @PathVariable long postId,
                                             @Valid @ModelAttribute ReqUpdatePostDto reqUpdatePostDto) throws IOException {
         return ResponseDto.success(postService.updatePost(postId, reqUpdatePostDto));
@@ -61,6 +65,7 @@ public class PostController {
 
     @DeleteMapping
     @Operation(summary = "게시글 삭제", description = "게시글 삭제 api", tags = "post")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseDto<Void> deletePost(@Valid @RequestBody ReqDeletePostDto reqDeleteDto) {
         postService.deletePost(reqDeleteDto);
         return ResponseDto.success(null);
