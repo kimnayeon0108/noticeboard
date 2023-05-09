@@ -65,6 +65,8 @@ public class Comment {
     }
 
     public boolean hasChildren() {
-        return this.comments.size() > 0;
+        return this.comments.stream()
+                            .filter(c -> !c.isDeleted)
+                            .count() > 0;
     }
 }
