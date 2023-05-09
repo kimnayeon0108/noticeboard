@@ -134,18 +134,25 @@ public class PostService {
     }
 
     public void deletePost(ReqDeletePostDto reqDeletePostDto) {
-        List<Post> posts = postRepository.findAllByIdIn(reqDeletePostDto.getPostIds());
-        User user = userRepository.findById(reqDeletePostDto.getUserId()).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        List<Long> postIds = new ArrayList<>(reqDeletePostDto.getPostIds());
+        List<Post> posts = postRepository.findAllByIdIn(postIds);
+
+        if (postIds.size() != posts.size()) {
+            throw new BaseException(ErrorCode.POST_NOT_FOUND);
+        }
+
+        User user = userRepository.findById(reqDeletePostDto.getUserId())
+                                  .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         posts.forEach(post -> {
-            if (!user.isWriter(post.getUser().getId())) {
+            if (!user.isWriter(post.getUser()
+                                   .getId())) {
                 throw new BaseException(ErrorCode.USER_NOT_ALLOWED);
             }
-            postFileRepository.deleteAllByPostId(post.getId());
-
-            commentRepository.deleteAllByPostId(post.getId());
         });
 
-        postRepository.deleteAllById(reqDeletePostDto.getPostIds());
+        postFileRepository.deleteAllByPostIdIn(postIds);
+        commentRepository.deleteAllByPostIdIn(postIds);
+        postRepository.deleteAllByIdIn(postIds);
     }
 }

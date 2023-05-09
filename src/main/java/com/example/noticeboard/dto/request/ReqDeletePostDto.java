@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.Set;
 
 @Schema(description = "게시글 삭제 DTO")
 @Getter
@@ -19,5 +19,5 @@ public class ReqDeletePostDto {
 
     @NotEmpty(message = "삭제할 게시글의 id를 입력해 주세요.")
     @Schema(description = "삭제할 게시글의 id 리스트")
-    private List<Long> postIds;
+    private Set<Long> postIds;
 }

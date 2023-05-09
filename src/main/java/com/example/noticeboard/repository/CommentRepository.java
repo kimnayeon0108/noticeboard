@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface CommentRepository extends JpaRepository<Comment, Long>, CommentCustomRepository {
 
     @Modifying
-    @Query("UPDATE Comment c SET c.isDeleted = true WHERE c.post.id = :postId")
-    int deleteAllByPostId(@Param("postId") long postId);
+    @Query("UPDATE Comment c SET c.isDeleted = true WHERE c.post.id in (:postIds)")
+    int deleteAllByPostIdIn(@Param("postIds") List<Long> postIds);
 }
