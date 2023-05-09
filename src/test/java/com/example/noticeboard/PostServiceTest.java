@@ -9,8 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -36,6 +39,9 @@ public class PostServiceTest {
         reqCreatePostDto.setIsPublic(true);
         reqCreatePostDto.setIsCommentActive(true);
 
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "고양이.png", "image/png", new FileInputStream("/Users/kimnayeon/Downloads/고양이.png"));
+        reqCreatePostDto.setMultipartFiles(new MultipartFile[]{multipartFile});
+
         // when
         ResPostDto resPostDto = postService.addPost(reqCreatePostDto);
 
@@ -44,7 +50,31 @@ public class PostServiceTest {
         assertThat(resPostDto.getBody()).isEqualTo("내용");
         assertThat(resPostDto.getCategoryName()).isEqualTo("소분류");
         assertThat(resPostDto.getWriterName()).isEqualTo("김나연");
-        assertThat(resPostDto.getFilenames().size()).isEqualTo(0);
+        assertThat(resPostDto.getFilenames()
+                             .size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("게시글 작성 실패, 파일 첨부 3개 초과")
+    void addPostFailNumberOfFileExceeded() throws IOException {
+        // given
+        ReqCreatePostDto reqCreatePostDto = new ReqCreatePostDto();
+        reqCreatePostDto.setUserId(1L);
+        reqCreatePostDto.setTitle("제목");
+        reqCreatePostDto.setBody("내용");
+        reqCreatePostDto.setCategoryId(3L);
+        reqCreatePostDto.setIsPublic(true);
+        reqCreatePostDto.setIsCommentActive(true);
+
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "고양이.png", "image/png", new FileInputStream("/Users/kimnayeon/Downloads/고양이.png"));
+        reqCreatePostDto.setMultipartFiles(new MultipartFile[]{multipartFile, multipartFile, multipartFile, multipartFile});
+
+        // when
+        BaseException exception = assertThrows(BaseException.class, () -> postService.addPost(reqCreatePostDto));
+
+        // then
+        assertThat(exception.getErrorCode()).isEqualTo("0202");
+        assertThat(exception.getMessage()).isEqualTo("파일 업로드는 3개까지 가능합니다.");
     }
 
     @Test
@@ -58,15 +88,22 @@ public class PostServiceTest {
         dto.setOrderBy(PostOrderType.CREATED_AT);
 
         // when
-        List<ResPostDto> posts = postService.getPosts(dto).getContents();
+        List<ResPostDto> posts = postService.getPosts(dto)
+                                            .getContents();
 
         // then
         assertThat(posts.size()).isEqualTo(4);
-        assertThat(posts.get(0).getTitle()).isEqualTo("게시글4");
-        assertThat(posts.get(0).getFilenames().size()).isEqualTo(1);
-        assertThat(posts.get(1).getTitle()).isEqualTo("게시글3");
-        assertThat(posts.get(2).getTitle()).isEqualTo("게시글2");
-        assertThat(posts.get(3).getTitle()).isEqualTo("게시글1");
+        assertThat(posts.get(0)
+                        .getTitle()).isEqualTo("게시글4");
+        assertThat(posts.get(0)
+                        .getFilenames()
+                        .size()).isEqualTo(1);
+        assertThat(posts.get(1)
+                        .getTitle()).isEqualTo("게시글3");
+        assertThat(posts.get(2)
+                        .getTitle()).isEqualTo("게시글2");
+        assertThat(posts.get(3)
+                        .getTitle()).isEqualTo("게시글1");
     }
 
     @Test
@@ -79,13 +116,17 @@ public class PostServiceTest {
         dto.setOrderBy(PostOrderType.VIEW_COUNT);
 
         // when
-        List<ResPostDto> posts = postService.getPosts(dto).getContents();
+        List<ResPostDto> posts = postService.getPosts(dto)
+                                            .getContents();
 
         // then
         assertThat(posts.size()).isEqualTo(3);
-        assertThat(posts.get(0).getTitle()).isEqualTo("게시글2");
-        assertThat(posts.get(1).getTitle()).isEqualTo("게시글3");
-        assertThat(posts.get(2).getTitle()).isEqualTo("게시글4");
+        assertThat(posts.get(0)
+                        .getTitle()).isEqualTo("게시글2");
+        assertThat(posts.get(1)
+                        .getTitle()).isEqualTo("게시글3");
+        assertThat(posts.get(2)
+                        .getTitle()).isEqualTo("게시글4");
     }
 
     @Test
@@ -98,11 +139,13 @@ public class PostServiceTest {
         dto.setOrderBy(PostOrderType.CREATED_AT);
 
         // when
-        List<ResPostDto> posts = postService.getPosts(dto).getContents();
+        List<ResPostDto> posts = postService.getPosts(dto)
+                                            .getContents();
 
         // then
         assertThat(posts.size()).isEqualTo(1);
-        assertThat(posts.get(0).getTitle()).isEqualTo("게시글1");
+        assertThat(posts.get(0)
+                        .getTitle()).isEqualTo("게시글1");
     }
 
     @Test
@@ -115,11 +158,13 @@ public class PostServiceTest {
         dto.setOrderBy(PostOrderType.CREATED_AT);
 
         // when
-        List<ResPostDto> posts = postService.getPosts(dto).getContents();
+        List<ResPostDto> posts = postService.getPosts(dto)
+                                            .getContents();
 
         // then
         assertThat(posts.size()).isEqualTo(1);
-        assertThat(posts.get(0).getTitle()).isEqualTo("게시글1");
+        assertThat(posts.get(0)
+                        .getTitle()).isEqualTo("게시글1");
     }
 
     @Test
