@@ -13,8 +13,8 @@ import javax.validation.constraints.NotNull;
 @ParameterObject
 public class ReqPostListParamsDto {
 
-    @Parameter(description = "작성자 이름 (필터)")
-    private String writerName;
+    @Parameter(description = "작성자 id (필터)")
+    private Long userId;
 
     @Parameter(description = "제목 (검색)")
     private String title;
@@ -22,8 +22,8 @@ public class ReqPostListParamsDto {
     @Parameter(description = "내용 (검색)")
     private String body;
 
-    @Parameter(description = "카테고리 이름 (필터)")
-    private String categoryName;
+    @Parameter(description = "카테고리 id (필터)")
+    private Long categoryId;
 
     @Parameter(required = true, description = "정렬 기준")
     @NotNull

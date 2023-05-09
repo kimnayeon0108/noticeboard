@@ -82,7 +82,7 @@ public class PostServiceTest {
     void getPostsByWriterName() {
         // given
         ReqPostListParamsDto dto = new ReqPostListParamsDto();
-        dto.setWriterName("김나연");
+        dto.setUserId(1L);
         dto.setPage(1);
         dto.setPageSize(10);
         dto.setOrderBy(PostOrderType.CREATED_AT);
@@ -110,7 +110,7 @@ public class PostServiceTest {
     @DisplayName("게시글 목록 조회, 카테고리 필터링, 조회 수 정렬")
     void getPostsByCategoryName() {
         ReqPostListParamsDto dto = new ReqPostListParamsDto();
-        dto.setCategoryName("소분류");
+        dto.setCategoryId(3L);
         dto.setPage(1);
         dto.setPageSize(10);
         dto.setOrderBy(PostOrderType.VIEW_COUNT);

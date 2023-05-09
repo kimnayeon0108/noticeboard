@@ -31,29 +31,29 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     @Override
     public Page<Post> findAllByConditions(ReqPostListParamsDto requestParams, Pageable pageable) {
         List<Post> contents = jpaQueryFactory.selectFrom(post)
-                .join(post.user, user)
-                .fetchJoin()
-                .join(post.category, category)
-                .fetchJoin()
-                .leftJoin(post.postFiles, postFile)
-                .distinct()
-                .where(titleContains(requestParams.getTitle()),
-                        userNameEq(requestParams.getWriterName()),
-                        bodyContains(requestParams.getBody()),
-                        categoryNameEq(requestParams.getCategoryName()),
-                        post.publicState.isTrue())
-                .orderBy(getListOrderSpecifier(requestParams.getOrderBy()))
-                .limit(pageable.getPageSize())
-                .offset(pageable.getOffset())
-                .fetch();
+                                             .join(post.user, user)
+                                             .fetchJoin()
+                                             .join(post.category, category)
+                                             .fetchJoin()
+                                             .leftJoin(post.postFiles, postFile)
+                                             .distinct()
+                                             .where(titleContains(requestParams.getTitle()),
+                                                     userIdEq(requestParams.getUserId()),
+                                                     bodyContains(requestParams.getBody()),
+                                                     categoryIdEq(requestParams.getCategoryId()),
+                                                     post.publicState.isTrue())
+                                             .orderBy(getListOrderSpecifier(requestParams.getOrderBy()))
+                                             .limit(pageable.getPageSize())
+                                             .offset(pageable.getOffset())
+                                             .fetch();
 
         long totalSize = jpaQueryFactory.select(post.count())
-                .from(post)
-                .where(titleContains(requestParams.getTitle()),
-                        userNameEq(requestParams.getWriterName()),
-                        bodyContains(requestParams.getBody()),
-                        categoryNameEq(requestParams.getCategoryName()))
-                .fetchOne();
+                                        .from(post)
+                                        .where(titleContains(requestParams.getTitle()),
+                                                userIdEq(requestParams.getUserId()),
+                                                bodyContains(requestParams.getBody()),
+                                                categoryIdEq(requestParams.getCategoryId()))
+                                        .fetchOne();
 
         return new PageImpl<>(contents, pageable, totalSize);
     }
@@ -62,16 +62,16 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         return !StringUtils.isBlank(title) ? post.title.contains(title) : null;
     }
 
-    private BooleanExpression userNameEq(String userName) {
-        return !StringUtils.isBlank(userName) ? user.name.eq(userName) : null;
+    private BooleanExpression userIdEq(Long userId) {
+        return userId != null ? user.id.eq(userId) : null;
     }
 
     private BooleanExpression bodyContains(String body) {
         return !StringUtils.isBlank(body) ? post.body.contains(body) : null;
     }
 
-    private BooleanExpression categoryNameEq(String categoryName) {
-        return !StringUtils.isBlank(categoryName) ? category.name.eq(categoryName) : null;
+    private BooleanExpression categoryIdEq(Long categoryId) {
+        return categoryId != null ? category.id.eq(categoryId) : null;
     }
 
     private OrderSpecifier[] getListOrderSpecifier(PostOrderType postOrder) {
