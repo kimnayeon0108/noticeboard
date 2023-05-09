@@ -1,7 +1,6 @@
 package com.example.noticeboard.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,33 +17,33 @@ import javax.validation.constraints.Pattern;
 public class ReqUpdatePostDto {
 
     @NotNull
-    @Parameter(description = "유저 id", required = true)
+    @Schema(description = "유저 id")
     private long userId;    // 로그인 구현 이후 삭제
 
     @Pattern(regexp = "^[a-zA-Z0-9]*$")
     @Length(min = 4, max = 8)
-    @Parameter(description = "게시글 비밀번호, 비밀번호 미설정 시 제외합니다.")
+    @Schema(description = "게시글 비밀번호, 비밀번호 미설정 시 생략합니다.", nullable = true)
     private String password;
 
     @JsonProperty("isPublic")
-    @Parameter(description = "공개 여부", required = true)
+    @Schema(description = "공개 여부")
     @NotNull
     private Boolean isPublic;
 
     @NotNull
-    @Parameter(description = "카테고리 id", required = true)
+    @Schema(description = "카테고리 id")
     private long categoryId;
 
     @NotEmpty
     @Length(min = 1, max = 30)
-    @Parameter(description = "제목 (1 ~ 30자까지)", required = true)
+    @Schema(description = "제목 (1 ~ 30자까지)")
     private String title;
 
     @NotEmpty
     @Length(min = 1, max = 1000)
-    @Parameter(description = "내용 (1 ~ 1000자까지)", required = true)
+    @Schema(description = "내용 (1 ~ 1000자까지)")
     private String body;
 
-    @Parameter(description = "파일 업로드 3개까지")
-    MultipartFile[] multipartFiles;
+    @Schema(description = "파일 첨부 3개까지", nullable = true)
+    private MultipartFile[] multipartFiles;
 }
