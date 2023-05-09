@@ -1,6 +1,6 @@
-INSERT INTO `user` (id, login_id, password, name, status, created_at, updated_at)
-VALUES (1, 'yeon', 'yeon1234', '김나연', 1, current_timestamp, current_timestamp),
-       (2, 'nayeon', '1234', '이나연', 1, current_timestamp, current_timestamp);
+INSERT INTO `user` (id, email, encrypted_password, name, status, created_at, updated_at)
+VALUES (1, 'yeon@dkargo.io', 'yeon1234', '김나연', 1, current_timestamp, current_timestamp),
+       (2, 'nayeon@dkargo.io', '1234', '이나연', 1, current_timestamp, current_timestamp);
 
 
 INSERT INTO category (id, parent_id, name, created_at)
