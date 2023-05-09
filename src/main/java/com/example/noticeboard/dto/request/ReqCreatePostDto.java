@@ -49,5 +49,6 @@ public class ReqCreatePostDto {
     private String body;
 
     @Schema(description = "파일 첨부 3개까지", nullable = true)
+    @Size(max = 3, message = "파일 첨부는 최대 3개까지 가능합니다.")
     private MultipartFile[] multipartFiles;
 }

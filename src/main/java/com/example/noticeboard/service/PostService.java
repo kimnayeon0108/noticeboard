@@ -60,10 +60,6 @@ public class PostService {
     }
 
     private List<String> saveFiles(MultipartFile[] files, Post post) throws IOException {
-        if (files.length > 3) {
-            throw new BaseException(ErrorCode.POST_FILE_EXCEEDED);
-        }
-
         List<PostFile> postFiles = new ArrayList<>();
 
         for (MultipartFile file : files) {
@@ -75,7 +71,9 @@ public class PostService {
         }
         postFileRepository.saveAll(postFiles);
 
-        return postFiles.stream().map(PostFile::getFilename).collect(Collectors.toList());
+        return postFiles.stream()
+                        .map(PostFile::getFilename)
+                        .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
