@@ -7,9 +7,10 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -29,7 +30,7 @@ public class ReqCreatePostDto {
     @NotNull
     private Boolean isCommentActive;
 
-    @Pattern(regexp = "^[a-zA-Z0-9]*$")
+    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "영문, 숫자 포함 길이가 4이상 8이하이어야 합니다.")
     @Length(min = 4, max = 8)
     @Schema(description = "게시글 비밀번호, 비밀번호 미설정 시 생략합니다.", nullable = true)
     private String password;
@@ -38,12 +39,12 @@ public class ReqCreatePostDto {
     @Schema(description = "카테고리 id")
     private Long categoryId;
 
-    @NotEmpty
+    @NotBlank
     @Length(min = 1, max = 30)
     @Schema(description = "제목 (1 ~ 30자까지)")
     private String title;
 
-    @NotEmpty
+    @NotBlank
     @Length(min = 1, max = 1000)
     @Schema(description = "내용 (1 ~ 1000자까지)")
     private String body;
