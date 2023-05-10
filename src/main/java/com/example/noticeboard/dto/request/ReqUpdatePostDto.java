@@ -5,9 +5,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Schema(description = "게시글 수정 DTO")
 @Getter
@@ -42,7 +43,7 @@ public class ReqUpdatePostDto {
     @Schema(description = "내용 (1 ~ 1000자까지)")
     private String body;
 
-    @Schema(description = "파일 첨부 3개까지", nullable = true)
-    @Size(max = 3, message = "파일 첨부는 최대 3개까지 가능합니다.")
-    private MultipartFile[] multipartFiles;
+//    @Schema(description = "파일 첨부 3개까지", nullable = true)
+//    @Size(max = 3, message = "파일 첨부는 최대 3개까지 가능합니다.")
+//    private MultipartFile[] multipartFiles;
 }
