@@ -24,6 +24,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,8 +45,7 @@ public class SecurityConfig {
 
     @Bean
     public CustomAuthenticationFilter customAuthenticationFilter() {
-        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(objectMapper(),
-                authenticationManager());
+        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(objectMapper, authenticationManager());
         authenticationFilter.setFilterProcessesUrl("/user/login");
         authenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler());
         authenticationFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler());
@@ -65,21 +65,16 @@ public class SecurityConfig {
 
     @Bean
     public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return new CustomAuthenticationSuccessHandler(jwtTokenProvider(), objectMapper());
+        return new CustomAuthenticationSuccessHandler(jwtTokenProvider(), objectMapper);
     }
 
     @Bean
     public CustomAuthenticationFailureHandler customAuthenticationFailureHandler() {
-        return new CustomAuthenticationFailureHandler(objectMapper());
+        return new CustomAuthenticationFailureHandler(objectMapper);
     }
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
         return new JwtTokenProvider();
-    }
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
     }
 }

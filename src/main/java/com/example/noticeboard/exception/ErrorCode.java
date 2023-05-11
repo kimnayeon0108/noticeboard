@@ -5,6 +5,7 @@ public enum ErrorCode {
     // user
     USER_NOT_FOUND("0101", "회원이 존재하지 않습니다."),
     USER_NOT_ALLOWED("0102", "유저의 리소스가 아닙니다."),
+    ALREADY_SIGNUP("0103", "이미 가입된 이메일입니다."),
 
     // post
     POST_NOT_FOUND("0201", "게시글이 존재하지 않습니다."),
