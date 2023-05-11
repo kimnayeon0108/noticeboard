@@ -38,3 +38,6 @@ out/
 
 ### database connection setting ###
 src/main/resources/application-mariadb-local.yml
+
+### private ###
+src/main/resources/application-private.yml

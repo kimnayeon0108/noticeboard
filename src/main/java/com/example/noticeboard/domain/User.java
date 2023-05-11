@@ -20,10 +20,15 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
     private String email;
     private String encryptedPassword;
     private String name;
     private boolean status;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

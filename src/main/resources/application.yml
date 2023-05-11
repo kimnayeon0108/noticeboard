@@ -1,6 +1,6 @@
 spring:
   profiles:
-    default: local, mariadb-local
+    default: local, mariadb-local, private
   jpa:
     properties:
       hibernate:
