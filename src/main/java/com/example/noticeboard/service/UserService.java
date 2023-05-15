@@ -20,7 +20,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public ResUserDto signup(ReqSignupDto reqSignupDto) {
+    public ResUserDto signup(ReqSignupDto reqSignupDto, UserRole role) {
 
         if (userRepository.existsByEmail(reqSignupDto.getEmail())) {
             throw new BaseException(ErrorCode.ALREADY_SIGNUP);
@@ -31,11 +31,23 @@ public class UserService {
                         .email(reqSignupDto.getEmail())
                         .name(reqSignupDto.getName())
                         .encryptedPassword(encodedPassword)
-                        .role(UserRole.ROLE_USER)
+                        .role(role)
                         .build();
 
         userRepository.save(user);
 
+        return ResUserDto.of(user);
+    }
+
+    @Transactional(readOnly = true)
+    public User getUser(String email) {
+        return userRepository.findByEmail(email)
+                             .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public ResUserDto getProfile(String email) {
+        User user = getUser(email);
         return ResUserDto.of(user);
     }
 }
