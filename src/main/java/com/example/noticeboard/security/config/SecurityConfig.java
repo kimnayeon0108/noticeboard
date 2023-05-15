@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -25,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -54,13 +54,7 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeHttpRequests()
-            .antMatchers(HttpMethod.POST, "/posts/**")
-            .hasRole("USER")
-            .antMatchers(HttpMethod.DELETE, "/posts/**")
-            .hasRole("USER")
-            .antMatchers(HttpMethod.PUT, "/posts/**")
-            .hasRole("USER")
-            .antMatchers(HttpMethod.POST, "/categories/**")
+            .antMatchers("/categories/**")
             .hasRole("ADMIN")
             .anyRequest()
             .permitAll();
@@ -84,9 +78,17 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        //Todo: Filter 객체 생성할 때 첫번째 생성자로 들어가는 antPathMatcher 경로 변경해주기
-        JwtAuthenticationFilter authenticationFilter = new JwtAuthenticationFilter(new AntPathRequestMatcher("/posts", "POST"), authenticationManager(),
-                tokenExtractor);
+
+        JwtAuthenticationFilter authenticationFilter =
+                new JwtAuthenticationFilter(new OrRequestMatcher(
+                        new AntPathRequestMatcher("/categories/**"),
+                        new AntPathRequestMatcher("/posts", "POST"),
+                        new AntPathRequestMatcher("/posts", "PUT"),
+                        new AntPathRequestMatcher("/posts", "DELETE"),
+                        new AntPathRequestMatcher("/user/**")
+                ),
+                        authenticationManager(),
+                        tokenExtractor);
         return authenticationFilter;
     }
 
