@@ -1,4 +1,4 @@
-package com.example.noticeboard.security.config.provider;
+package com.example.noticeboard.security.provider;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

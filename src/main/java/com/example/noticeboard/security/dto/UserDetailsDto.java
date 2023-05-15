@@ -1,4 +1,4 @@
-package com.example.noticeboard.security.config.dto;
+package com.example.noticeboard.security.dto;
 
 import com.example.noticeboard.domain.User;
 import lombok.Getter;

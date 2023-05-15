@@ -31,7 +31,7 @@ public class UserService {
                         .email(reqSignupDto.getEmail())
                         .name(reqSignupDto.getName())
                         .encryptedPassword(encodedPassword)
-                        .role(UserRole.USER)
+                        .role(UserRole.ROLE_USER)
                         .build();
 
         userRepository.save(user);

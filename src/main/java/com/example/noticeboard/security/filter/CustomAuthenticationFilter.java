@@ -1,25 +1,27 @@
-package com.example.noticeboard.security.config.filter;
+package com.example.noticeboard.security.filter;
 
 import com.example.noticeboard.exception.BaseException;
 import com.example.noticeboard.exception.ErrorCode;
-import com.example.noticeboard.security.config.dto.ReqLoginDto;
+import com.example.noticeboard.security.dto.ReqLoginDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class CustomAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private final ObjectMapper objectMapper;
 
-    public CustomAuthenticationFilter(ObjectMapper objectMapper, AuthenticationManager authenticationManager) {
-        super.setAuthenticationManager(authenticationManager);
+    public CustomAuthenticationFilter(ObjectMapper objectMapper,
+                                      AuthenticationManager authenticationManager) {
+        super(new AntPathRequestMatcher("/login", "POST"), authenticationManager);
         this.objectMapper = objectMapper;
     }
 
@@ -34,7 +36,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         } catch (IOException e) {
             throw new BaseException(ErrorCode.INVALID_INPUT);
         }
-        setDetails(request, authenticationToken);
 
         return this.getAuthenticationManager()
                    .authenticate(authenticationToken);

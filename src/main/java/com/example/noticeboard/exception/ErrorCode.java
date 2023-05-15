@@ -2,6 +2,9 @@ package com.example.noticeboard.exception;
 
 public enum ErrorCode {
 
+    // common
+    INVALID_INPUT("0001", "input값이 적절하지 않습니다."),
+
     // user
     USER_NOT_FOUND("0101", "회원이 존재하지 않습니다."),
     USER_NOT_ALLOWED("0102", "유저의 리소스가 아닙니다."),

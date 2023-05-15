@@ -1,4 +1,4 @@
-package com.example.noticeboard.security.config.dto;
+package com.example.noticeboard.security.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

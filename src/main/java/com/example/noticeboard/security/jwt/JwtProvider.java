@@ -1,10 +1,11 @@
-package com.example.noticeboard.security.config.jwt;
+package com.example.noticeboard.security.jwt;
 
 import com.example.noticeboard.domain.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -14,7 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Log4j2
-public class JwtTokenProvider {
+@Component
+public class JwtProvider {
 
     @Value("${jwt.secret}")
     private String secretKey;

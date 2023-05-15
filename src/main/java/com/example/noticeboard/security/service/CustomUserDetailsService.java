@@ -1,7 +1,7 @@
-package com.example.noticeboard.security.config.service;
+package com.example.noticeboard.security.service;
 
 import com.example.noticeboard.repository.UserRepository;
-import com.example.noticeboard.security.config.dto.UserDetailsDto;
+import com.example.noticeboard.security.dto.UserDetailsDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
