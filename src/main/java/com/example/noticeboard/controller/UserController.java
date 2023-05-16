@@ -43,4 +43,13 @@ public class UserController {
     public ResponseDto<ResUserDto> showProfile(@Parameter(hidden = true) @AuthenticationPrincipal UserDetailsDto userDetails) {
         return ResponseDto.success(userService.getProfile(userDetails.getUsername()));
     }
+
+    @DeleteMapping("/user")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 api", tags = "user")
+    public ResponseDto<ResUserDto> withdraw(@Parameter(hidden = true) @AuthenticationPrincipal UserDetailsDto userDetails) {
+
+        userService.withdraw(userDetails.getUsername());
+        return ResponseDto.success(null);
+    }
 }

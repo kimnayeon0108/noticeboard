@@ -50,4 +50,9 @@ public class UserService {
         User user = getUser(email);
         return ResUserDto.of(user);
     }
+
+    public void withdraw(String email) {
+        User user = getUser(email);
+        user.withdraw();
+    }
 }
