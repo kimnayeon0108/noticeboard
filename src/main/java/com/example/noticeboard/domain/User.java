@@ -25,7 +25,7 @@ public class User {
     private String email;
     private String encryptedPassword;
     private String name;
-    private boolean status;
+    private boolean isDeleted;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
@@ -46,6 +46,6 @@ public class User {
         this.encryptedPassword = encryptedPassword;
         this.name = name;
         this.role = role;
-        this.status = true;
+        this.isDeleted = false;
     }
 }
