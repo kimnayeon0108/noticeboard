@@ -48,4 +48,8 @@ public class User {
         this.role = role;
         this.isDeleted = false;
     }
+
+    public boolean isAdmin() {
+        return this.role == UserRole.ROLE_ADMIN;
+    }
 }

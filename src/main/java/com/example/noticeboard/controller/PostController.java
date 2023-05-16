@@ -6,6 +6,7 @@ import com.example.noticeboard.dto.response.ResPostDto;
 import com.example.noticeboard.dto.response.ResponseDto;
 import com.example.noticeboard.exception.BaseException;
 import com.example.noticeboard.exception.ErrorCode;
+import com.example.noticeboard.security.dto.UserDetailsDto;
 import com.example.noticeboard.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +41,6 @@ public class PostController {
             @Valid @RequestPart(value = "post")
             @Parameter(schema = @Schema(type = "string", format = "binary"),
                        description = " &nbsp;json 파일을 업로드해 주세요. <br>&nbsp;example: {<br>" +
-                               " &nbsp;\"userId\": 1,<br>" +
                                " &nbsp;\"isPublic\": true,<br>" +
                                " &nbsp;\"password\": \"1234\",<br>" +
                                " &nbsp;\"categoryId\": 3,<br>" +
@@ -47,14 +48,14 @@ public class PostController {
                                " &nbsp;\"body\": \"게시글 내용\",<br>" +
                                " &nbsp;\"isCommentActive\": true<br>" +
                                "}") ReqCreatePostDto reqCreatePostDto,
-            @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) throws IOException {
+            @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsDto userDetails) throws IOException {
 
         if (!ObjectUtils.isEmpty(multipartFiles) && multipartFiles.length > MAX_FILE_UPLOAD_COUNT) {
             throw new BaseException(ErrorCode.POST_FILE_EXCEEDED);
         }
 
-        ResPostDto resPostDto = postService.addPost(reqCreatePostDto, multipartFiles);
-        return ResponseDto.success(resPostDto);
+        return ResponseDto.success(postService.addPost(reqCreatePostDto, multipartFiles, userDetails));
     }
 
     @GetMapping
@@ -87,27 +88,29 @@ public class PostController {
             @Valid @RequestPart(value = "post")
             @Parameter(schema = @Schema(type = "string", format = "binary"),
                        description = " &nbsp;json 파일을 업로드해 주세요. <br>&nbsp;example: {<br>" +
-                               " &nbsp;\"userId\": 1,<br>" +
                                " &nbsp;\"isPublic\": true,<br>" +
                                " &nbsp;\"password\": \"1234\",<br>" +
                                " &nbsp;\"categoryId\": 3,<br>" +
                                " &nbsp;\"title\": \"제목\",<br>" +
                                " &nbsp;\"body\": \"게시글 내용\" <br>" +
                                "}") ReqUpdatePostDto reqUpdatePostDto,
-            @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) throws IOException {
+            @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsDto userDetails) throws IOException {
 
         if (!ObjectUtils.isEmpty(multipartFiles) && multipartFiles.length > MAX_FILE_UPLOAD_COUNT) {
             throw new BaseException(ErrorCode.POST_FILE_EXCEEDED);
         }
 
-        return ResponseDto.success(postService.updatePost(postId, reqUpdatePostDto, multipartFiles));
+        return ResponseDto.success(postService.updatePost(postId, reqUpdatePostDto, multipartFiles, userDetails));
     }
 
     @DeleteMapping
     @Operation(summary = "게시글 삭제", description = "게시글 삭제 api", tags = "post")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseDto<Void> deletePost(@Valid @RequestBody ReqDeletePostDto reqDeleteDto) {
-        postService.deletePost(reqDeleteDto);
+    public ResponseDto<Void> deletePost(@Valid @RequestBody ReqDeletePostDto reqDeleteDto,
+                                        @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsDto userDetails) {
+
+        postService.deletePost(reqDeleteDto, userDetails);
         return ResponseDto.success(null);
     }
 }

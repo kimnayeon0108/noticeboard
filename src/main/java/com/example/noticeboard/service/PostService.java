@@ -160,7 +160,7 @@ public class PostService {
         User user = userService.getUser(userDetails.getUsername());
 
         if (!user.isWriter(post.getUser()
-                               .getId())) {
+                               .getId()) && !user.isAdmin()) {
             throw new BaseException(ErrorCode.USER_NOT_ALLOWED);
         }
 
@@ -210,7 +210,7 @@ public class PostService {
 
         posts.forEach(post -> {
             if (!user.isWriter(post.getUser()
-                                   .getId())) {
+                                   .getId()) && !user.isAdmin()) {
                 throw new BaseException(ErrorCode.USER_NOT_ALLOWED);
             }
         });
