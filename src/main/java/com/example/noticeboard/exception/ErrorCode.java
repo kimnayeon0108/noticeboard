@@ -19,7 +19,8 @@ public enum ErrorCode {
     UNDELETABLE_COMMENT("0302", "댓글을 삭제할 수 없습니다."),
 
     // category
-    CATEGORY_NOT_FOUND("0401", "카테고리가 존재하지 않습니다.");
+    CATEGORY_NOT_FOUND("0401", "카테고리가 존재하지 않습니다."),
+    UNDELETABLE_CATEGORY("0402", "카테고리를 삭제할 수 없습니다.");
 
     private final String code;
     private final String message;
