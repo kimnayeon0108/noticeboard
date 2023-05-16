@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springdoc.api.annotations.ParameterObject;
 
-import javax.validation.constraints.NotNull;
-
 @Getter
 @Setter
 @ParameterObject
@@ -25,13 +23,12 @@ public class ReqPostListParamsDto {
     @Parameter(description = "카테고리 id (필터)")
     private Long categoryId;
 
-    @Parameter(required = true, description = "정렬 기준")
-    @NotNull
+    @Parameter(description = "정렬 기준, 기본값: CREATED_AT")
     private PostOrderType orderBy = PostOrderType.CREATED_AT;
 
-    @Parameter(required = true, description = "페이지")
+    @Parameter(description = "페이지, 기본값: 1")
     private int page = 1;
 
-    @Parameter(required = true, description = "페이지 size")
+    @Parameter(description = "페이지 size, 기본값: 20")
     private int pageSize = 20;
 }
