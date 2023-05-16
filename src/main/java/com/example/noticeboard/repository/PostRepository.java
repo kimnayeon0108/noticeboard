@@ -18,5 +18,5 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRep
 
     @Modifying
     @Query("UPDATE Post p SET p.isDeleted = true WHERE p.id IN (:postIds)")
-    int deleteAllById(@Param("postIds") List<Long> postIds);
+    int deleteAllByIdIn(@Param("postIds") List<Long> postIds);
 }

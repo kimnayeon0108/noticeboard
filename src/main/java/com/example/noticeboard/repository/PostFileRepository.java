@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface PostFileRepository extends JpaRepository<PostFile, Long> {
 
     @Modifying
-    @Query("UPDATE PostFile pf SET pf.isDeleted = true WHERE pf.post.id = :postId")
-    int deleteAllByPostId(@Param("postId") long postId);
+    @Query("UPDATE PostFile pf SET pf.isDeleted = true WHERE pf.post.id in (:postIds)")
+    int deleteAllByPostIdIn(@Param("postIds") List<Long> postIds);
 }

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
@@ -26,34 +27,47 @@ public class Post {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "title")
     private String title;
+
+    @Lob
+    @Column(name = "body")
     private String body;
+
+    @Column(name = "public_state", nullable = false)
     private boolean publicState;
+
     private String password;
+
+    @Column(name = "comment_active_state", nullable = false)
     private boolean commentActiveState;
-    private int viewCount = 0;
-    private boolean isDeleted = false;
+
+    @Column(name = "view_count", nullable = false)
+    private int viewCount;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 
     @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "post")
     private List<PostFile> postFiles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post")
+    private List<PostCategory> postCategories = new ArrayList<>();
+
     @Builder
-    public Post(Category category, User user, String title, String body,
+    public Post(User user, String title, String body,
                 boolean publicState, String password, boolean commentActiveState) {
-        this.category = category;
         this.user = user;
         this.title = title;
         this.body = body;
@@ -61,6 +75,7 @@ public class Post {
         this.password = password;
         this.commentActiveState = commentActiveState;
         this.viewCount = 0;
+        this.isDeleted = false;
     }
 
     public boolean isPasswordEqual(String password) {
@@ -68,18 +83,17 @@ public class Post {
     }
 
     public boolean hasPassword() {
-        return this.password != null;
+        return !StringUtils.isBlank(this.password);
     }
 
-    public void update(ReqUpdatePostDto reqUpdatePostDto, Category category) {
+    public void update(ReqUpdatePostDto reqUpdatePostDto) {
         this.publicState = reqUpdatePostDto.getIsPublic();
         this.password = reqUpdatePostDto.getPassword();
-        this.category = category;
         this.title = reqUpdatePostDto.getTitle();
         this.body = reqUpdatePostDto.getBody();
     }
 
     public boolean isSamePost(Long postId) {
-        return this.id == postId;
+        return postId != null && this.id == postId;
     }
 }

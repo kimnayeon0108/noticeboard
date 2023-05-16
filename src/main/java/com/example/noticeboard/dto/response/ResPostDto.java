@@ -8,6 +8,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Builder
@@ -28,7 +29,7 @@ public class ResPostDto {
     private String body;
 
     @Schema(description = "카테고리 이름")
-    private String categoryName;
+    private Map<String, String> categoryNames;
 
     @Schema(description = "조회 수")
     private int viewCount;
@@ -42,29 +43,35 @@ public class ResPostDto {
     @Schema(description = "수정 시간")
     private LocalDateTime updatedAt;
 
-    public static ResPostDto of(Post post, List<String> filenames) {
-        return ResPostDto.builder().id(post.getId())
-                .title(post.getTitle())
-                .writerName(post.getUser().getName())
-                .body(post.getBody())
-                .categoryName(post.getCategory().getName())
-                .viewCount(post.getViewCount())
-                .filenames(filenames)
-                .createdAt(post.getCreatedAt())
-                .updatedAt(post.getUpdatedAt())
-                .build();
+    public static ResPostDto of(Post post, List<String> filenames, Map<String, String> categoryNames) {
+        return ResPostDto.builder()
+                         .id(post.getId())
+                         .title(post.getTitle())
+                         .writerName(post.getUser()
+                                         .getName())
+                         .body(post.getBody())
+                         .categoryNames(categoryNames)
+                         .viewCount(post.getViewCount())
+                         .filenames(filenames)
+                         .createdAt(post.getCreatedAt())
+                         .updatedAt(post.getUpdatedAt())
+                         .build();
     }
 
     public static ResPostDto of(Post post) {
-        return ResPostDto.builder().id(post.getId())
-                .title(post.getTitle())
-                .writerName(post.getUser().getName())
-                .body(post.getBody())
-                .categoryName(post.getCategory().getName())
-                .viewCount(post.getViewCount())
-                .filenames(post.getPostFiles().stream().map(PostFile::getFilename).collect(Collectors.toList()))
-                .createdAt(post.getCreatedAt())
-                .updatedAt(post.getUpdatedAt())
-                .build();
+        return ResPostDto.builder()
+                         .id(post.getId())
+                         .title(post.getTitle())
+                         .writerName(post.getUser()
+                                         .getName())
+                         .body(post.getBody())
+                         .viewCount(post.getViewCount())
+                         .filenames(post.getPostFiles()
+                                        .stream()
+                                        .map(PostFile::getFilename)
+                                        .collect(Collectors.toList()))
+                         .createdAt(post.getCreatedAt())
+                         .updatedAt(post.getUpdatedAt())
+                         .build();
     }
 }
