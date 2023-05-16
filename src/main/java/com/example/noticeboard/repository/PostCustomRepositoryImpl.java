@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.noticeboard.domain.QCategory.category;
 import static com.example.noticeboard.domain.QPost.post;
+import static com.example.noticeboard.domain.QPostCategory.postCategory;
 import static com.example.noticeboard.domain.QPostFile.postFile;
 import static com.example.noticeboard.domain.QUser.user;
 
@@ -33,8 +33,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         List<Post> contents = jpaQueryFactory.selectFrom(post)
                                              .join(post.user, user)
                                              .fetchJoin()
-                                             .join(post.category, category)
-                                             .fetchJoin()
+                                             .join(post.postCategories, postCategory)
                                              .leftJoin(post.postFiles, postFile)
                                              .distinct()
                                              .where(titleContains(requestParams.getTitle()),
@@ -47,8 +46,9 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                                              .offset(pageable.getOffset())
                                              .fetch();
 
-        long totalSize = jpaQueryFactory.select(post.count())
+        long totalSize = jpaQueryFactory.select(post.countDistinct())
                                         .from(post)
+                                        .join(post.postCategories, postCategory)
                                         .where(titleContains(requestParams.getTitle()),
                                                 userIdEq(requestParams.getUserId()),
                                                 bodyContains(requestParams.getBody()),
@@ -71,7 +71,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
     private BooleanExpression categoryIdEq(Long categoryId) {
-        return categoryId != null ? category.id.eq(categoryId) : null;
+        return categoryId != null ? postCategory.category.id.eq(categoryId) : null;
     }
 
     private OrderSpecifier[] getListOrderSpecifier(PostOrderType postOrder) {
