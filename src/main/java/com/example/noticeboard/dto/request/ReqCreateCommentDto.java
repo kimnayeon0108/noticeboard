@@ -6,16 +6,11 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @Schema(description = "댓글 작성 DTO")
 public class ReqCreateCommentDto {
-
-    @NotNull
-    @Schema(description = "유저 id")
-    private long userId;
 
     @NotEmpty
     @Length(min = 1, max = 300)

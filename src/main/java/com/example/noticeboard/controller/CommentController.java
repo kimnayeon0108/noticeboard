@@ -1,10 +1,10 @@
 package com.example.noticeboard.controller;
 
 import com.example.noticeboard.dto.request.ReqCreateCommentDto;
-import com.example.noticeboard.dto.request.ReqDeleteCommentDto;
 import com.example.noticeboard.dto.request.ReqUpdateCommentDto;
 import com.example.noticeboard.dto.response.ResCommentDto;
 import com.example.noticeboard.dto.response.ResponseDto;
+import com.example.noticeboard.security.dto.UserDetailsDto;
 import com.example.noticeboard.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,10 +31,11 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<List<ResCommentDto>> addComment(
             @Parameter(in = ParameterIn.PATH, description = "게시글 id") @PathVariable long postId,
-            @Valid @RequestBody ReqCreateCommentDto reqCreateCommentDto) {
+            @Valid @RequestBody ReqCreateCommentDto reqCreateCommentDto,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsDto userDetails) {
 
         // 댓글 작성 후 해당 게시글의 댓글 목록 반환
-        return ResponseDto.success(commentService.addComment(postId, reqCreateCommentDto));
+        return ResponseDto.success(commentService.addComment(postId, reqCreateCommentDto, userDetails));
     }
 
     @GetMapping
@@ -51,9 +53,10 @@ public class CommentController {
     public ResponseDto<List<ResCommentDto>> editComment(
             @Parameter(in = ParameterIn.PATH, description = "게시글 id") @PathVariable long postId,
             @Parameter(in = ParameterIn.PATH, description = "댓글 id") @PathVariable long commentId,
-            @Valid @RequestBody ReqUpdateCommentDto reqUpdateCommentDto) {
+            @Valid @RequestBody ReqUpdateCommentDto reqUpdateCommentDto,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsDto userDetails) {
 
-        return ResponseDto.success(commentService.updateComment(postId, commentId, reqUpdateCommentDto));
+        return ResponseDto.success(commentService.updateComment(postId, commentId, reqUpdateCommentDto, userDetails));
     }
 
     @DeleteMapping("/{commentId}")
@@ -62,9 +65,9 @@ public class CommentController {
     public ResponseDto<Void> deleteComment(
             @Parameter(in = ParameterIn.PATH, description = "게시글 id") @PathVariable long postId,
             @Parameter(in = ParameterIn.PATH, description = "댓글 id") @PathVariable long commentId,
-            @Valid @RequestBody ReqDeleteCommentDto reqDeleteCommentDto) {
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsDto userDetails) {
 
-        commentService.deleteComment(postId, commentId, reqDeleteCommentDto);
+        commentService.deleteComment(postId, commentId, userDetails);
         return ResponseDto.success(null);
     }
 }

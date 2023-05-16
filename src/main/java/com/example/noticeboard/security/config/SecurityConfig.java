@@ -82,7 +82,7 @@ public class SecurityConfig {
         JwtAuthenticationFilter authenticationFilter =
                 new JwtAuthenticationFilter(new OrRequestMatcher(
                         new AntPathRequestMatcher("/categories/**"),
-                        new AntPathRequestMatcher("/posts", "POST"),
+                        new AntPathRequestMatcher("/posts/**", "POST"),
                         new AntPathRequestMatcher("/posts/**", "PUT"),
                         new AntPathRequestMatcher("/posts/**", "DELETE"),
                         new AntPathRequestMatcher("/user/**")
