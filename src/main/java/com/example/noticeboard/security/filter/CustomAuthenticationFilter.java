@@ -1,8 +1,7 @@
 package com.example.noticeboard.security.filter;
 
-import com.example.noticeboard.exception.BaseException;
-import com.example.noticeboard.exception.ErrorCode;
 import com.example.noticeboard.security.dto.ReqLoginDto;
+import com.example.noticeboard.security.exception.InvalidTokenException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,7 +33,7 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
             ReqLoginDto loginDto = objectMapper.readValue(request.getInputStream(), ReqLoginDto.class);
             authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
         } catch (IOException e) {
-            throw new BaseException(ErrorCode.INVALID_INPUT);
+            throw new InvalidTokenException();
         }
 
         return this.getAuthenticationManager()

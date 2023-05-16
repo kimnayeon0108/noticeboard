@@ -1,8 +1,8 @@
 package com.example.noticeboard.security.filter;
 
+import com.example.noticeboard.security.exception.TokenNotFoundException;
 import com.example.noticeboard.security.jwt.TokenExtractor;
 import com.example.noticeboard.security.token.JwtAuthenticationToken;
-import io.jsonwebtoken.JwtException;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         if (StringUtils.isBlank(header)) {
             log.error("Token is empty");
 
-            throw new JwtException("Token is empty");
+            throw new TokenNotFoundException();
         }
 
         String token = tokenExtractor.getTokenFromHeader(header);
@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException, IOException, ServletException, IOException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws ServletException, IOException {
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authResult);

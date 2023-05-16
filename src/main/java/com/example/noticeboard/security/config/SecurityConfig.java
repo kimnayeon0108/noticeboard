@@ -83,12 +83,15 @@ public class SecurityConfig {
                 new JwtAuthenticationFilter(new OrRequestMatcher(
                         new AntPathRequestMatcher("/categories/**"),
                         new AntPathRequestMatcher("/posts", "POST"),
-                        new AntPathRequestMatcher("/posts", "PUT"),
-                        new AntPathRequestMatcher("/posts", "DELETE"),
+                        new AntPathRequestMatcher("/posts/**", "PUT"),
+                        new AntPathRequestMatcher("/posts/**", "DELETE"),
                         new AntPathRequestMatcher("/user/**")
                 ),
                         authenticationManager(),
                         tokenExtractor);
+
+        authenticationFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler());
+
         return authenticationFilter;
     }
 
