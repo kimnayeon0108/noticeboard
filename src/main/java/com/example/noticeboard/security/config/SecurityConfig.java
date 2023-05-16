@@ -9,6 +9,7 @@ import com.example.noticeboard.security.jwt.JwtProvider;
 import com.example.noticeboard.security.jwt.TokenExtractor;
 import com.example.noticeboard.security.provider.CustomAuthenticationProvider;
 import com.example.noticeboard.security.provider.JwtAuthenticationProvider;
+import com.example.noticeboard.security.type.JwtAuthenticationRequestMatcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +24,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 @Configuration
@@ -80,13 +80,8 @@ public class SecurityConfig {
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
 
         JwtAuthenticationFilter authenticationFilter =
-                new JwtAuthenticationFilter(new OrRequestMatcher(
-                        new AntPathRequestMatcher("/categories/**"),
-                        new AntPathRequestMatcher("/posts/**", "POST"),
-                        new AntPathRequestMatcher("/posts/**", "PUT"),
-                        new AntPathRequestMatcher("/posts/**", "DELETE"),
-                        new AntPathRequestMatcher("/user/**")
-                ),
+                new JwtAuthenticationFilter(
+                        new OrRequestMatcher(JwtAuthenticationRequestMatcher.getMatchers()),
                         authenticationManager(),
                         tokenExtractor);
 
