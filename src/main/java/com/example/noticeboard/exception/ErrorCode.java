@@ -20,7 +20,8 @@ public enum ErrorCode {
 
     // category
     CATEGORY_NOT_FOUND("0401", "카테고리가 존재하지 않습니다."),
-    UNDELETABLE_CATEGORY("0402", "카테고리를 삭제할 수 없습니다.");
+    UNDELETABLE_CATEGORY("0402", "카테고리를 삭제할 수 없습니다."),
+    DUPLICATED_CATEGORY("0403", "이미 존재하는 카테고리입니다.");
 
     private final String code;
     private final String message;

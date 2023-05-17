@@ -16,7 +16,6 @@ import java.util.List;
 @Table(name = "category",
        uniqueConstraints = @UniqueConstraint(name = "uk_parent_id_name", columnNames = {"parent_id", "name"}))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//Todo: 유니크 키 (대분류 카테고리는 중복 안 막힘..)
 public class Category {
 
     public static final int TOTAL_DEPTH = 3;

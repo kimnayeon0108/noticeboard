@@ -25,6 +25,11 @@ public class CategoryService {
 
     public ResCategoryDto addCategory(ReqCreateCategoryDto reqCreateCategoryDto) {
 
+        if (categoryRepository.existsByParentIdAndName(reqCreateCategoryDto.getParentId(),
+                reqCreateCategoryDto.getName())) {
+            throw new BaseException(ErrorCode.DUPLICATED_CATEGORY);
+        }
+
         Category parentCategory = null;
 
         if (reqCreateCategoryDto.getParentId() != null) {

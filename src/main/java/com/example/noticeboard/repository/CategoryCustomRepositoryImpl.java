@@ -1,5 +1,6 @@
 package com.example.noticeboard.repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,5 +22,19 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
                               .where(postCategory.post.id.eq(postId))
                               .orderBy(category.depth.desc())
                               .fetchFirst();
+    }
+
+    @Override
+    public boolean existsByParentIdAndName(Long parentCategoryId, String name) {
+        Integer fetchOne = jpaQueryFactory.selectOne()
+                                          .from(category)
+                                          .where(parentCategoryIdEq(parentCategoryId),
+                                                  category.name.eq(name))
+                                          .fetchFirst();
+        return fetchOne != null;
+    }
+
+    private BooleanExpression parentCategoryIdEq(Long parentCategoryId) {
+        return parentCategoryId != null ? category.parentCategory.id.eq(parentCategoryId) : null;
     }
 }
