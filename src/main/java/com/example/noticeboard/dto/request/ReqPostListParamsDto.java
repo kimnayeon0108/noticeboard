@@ -4,7 +4,7 @@ import com.example.noticeboard.type.PostOrderType;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Getter;
 import lombok.Setter;
-import org.springdoc.api.annotations.ParameterObject;
+import org.springdoc.core.annotations.ParameterObject;
 
 @Getter
 @Setter
