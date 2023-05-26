@@ -1,8 +1,13 @@
 package com.example.noticeboard.security.filter;
 
-import com.example.noticeboard.security.exception.TokenNotFoundException;
+import com.example.noticeboard.exception.ErrorCode;
+import com.example.noticeboard.security.exception.BaseAuthenticationException;
 import com.example.noticeboard.security.jwt.TokenExtractor;
 import com.example.noticeboard.security.token.JwtAuthenticationToken;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,10 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Log4j2
@@ -37,7 +38,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         if (StringUtils.isBlank(header)) {
             log.error("Token is empty");
 
-            throw new TokenNotFoundException();
+            throw new BaseAuthenticationException(ErrorCode.TOKEN_NOT_FOUND);
         }
 
         String token = tokenExtractor.getTokenFromHeader(header);

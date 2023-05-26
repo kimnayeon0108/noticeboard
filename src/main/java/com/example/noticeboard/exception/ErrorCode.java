@@ -2,6 +2,12 @@ package com.example.noticeboard.exception;
 
 public enum ErrorCode {
 
+    // common
+    TOKEN_EXPIRE("0001", "토큰이 만료되었습니다."),
+    INVALID_TOKEN("0002", "토큰이 유효하지 않습니다."),
+    TOKEN_NOT_FOUND("0003", "토큰이 존재하지 않습니다."),
+    INVALID_REQUEST_BODY("0004", "요청이 유효하지 않습니다."),
+
     // user
     USER_NOT_FOUND("0101", "회원이 존재하지 않습니다."),
     USER_NOT_ALLOWED("0102", "유저의 리소스가 아닙니다."),

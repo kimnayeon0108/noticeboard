@@ -22,13 +22,23 @@ public class JwtProvider {
     private String secretKey;
 
     private long SEVEN_DAYS_IN_SECONDS = 604_800;
+    private long FIFTEEN_DAYS_IN_SECONDS = 1_296_000;
 
-    public String generateJwtToken(User user) {
+    public String generateAccessToken(User user) {
+        return generateJwtToken(user, createExpireDate(SEVEN_DAYS_IN_SECONDS));
+    }
+
+    public String generateRefreshToken(User user) {
+        return generateJwtToken(user, createExpireDate(FIFTEEN_DAYS_IN_SECONDS));
+    }
+
+    private String generateJwtToken(User user, Date expiration) {
         String token = Jwts.builder()
                            .setSubject(user.getEmail())
                            .setHeader(createHeader())
                            .setClaims(createClaims(user))
-                           .setExpiration(createExpireDateForOneWeek())
+                           .setExpiration(expiration)
+                           .setIssuedAt(new Date(System.currentTimeMillis()))
                            .signWith(SignatureAlgorithm.HS256, createSigningKey())
                            .compact();
 
@@ -42,8 +52,8 @@ public class JwtProvider {
         return new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    private Date createExpireDateForOneWeek() {
-        return new Date(System.currentTimeMillis() + SEVEN_DAYS_IN_SECONDS * 1000);
+    private Date createExpireDate(long duration) {
+        return new Date(System.currentTimeMillis() + duration * 1000);
     }
 
     private Map<String, Object> createClaims(User user) {

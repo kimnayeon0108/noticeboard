@@ -2,10 +2,9 @@ package com.example.noticeboard.security.config;
 
 import com.example.noticeboard.security.filter.CustomAuthenticationFilter;
 import com.example.noticeboard.security.filter.JwtAuthenticationFilter;
+import com.example.noticeboard.security.filter.JwtRefreshAuthenticationFilter;
 import com.example.noticeboard.security.handler.CustomAuthenticationFailureHandler;
 import com.example.noticeboard.security.handler.CustomAuthenticationSuccessHandler;
-import com.example.noticeboard.security.jwt.JwtDecoder;
-import com.example.noticeboard.security.jwt.JwtProvider;
 import com.example.noticeboard.security.jwt.TokenExtractor;
 import com.example.noticeboard.security.provider.CustomAuthenticationProvider;
 import com.example.noticeboard.security.provider.JwtAuthenticationProvider;
@@ -16,68 +15,55 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
     private final ObjectMapper objectMapper;
-    private final JwtProvider jwtProvider;
     private final TokenExtractor tokenExtractor;
-    private final JwtDecoder jwtDecoder;
+    private final CustomAuthenticationProvider customAuthenticationProvider;
+    private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+    private final CustomAuthenticationFailureHandler authenticationFailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf()
-            .disable()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .formLogin()
-            .disable()
-            .httpBasic()
-            .disable();
+        http.csrf(csrfConfigurer -> csrfConfigurer.disable())
+            .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .formLogin(formLoginConfigurer -> formLoginConfigurer.disable())
+            .httpBasic(httpBasicConfigurer -> httpBasicConfigurer.disable())
+            .logout(logoutConfigurer -> logoutConfigurer.disable());
 
+        http.addFilterBefore(jwtRefreshAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        http.authorizeHttpRequests()
-            .antMatchers("/categories/**")
-            .hasRole("ADMIN")
-            .anyRequest()
-            .permitAll();
+        http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.requestMatchers("/categories/**")
+                                                                                 .hasRole("ADMIN")
+                                                                                 .anyRequest()
+                                                                                 .permitAll());
 
         return http.build();
     }
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public CustomAuthenticationFilter customAuthenticationFilter() {
-        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(objectMapper, authenticationManager());
-        authenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler());
-        authenticationFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler());
-        authenticationFilter.afterPropertiesSet();
+    private CustomAuthenticationFilter customAuthenticationFilter() {
+        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(objectMapper,
+                authenticationManager());
+        authenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
+        authenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
         return authenticationFilter;
     }
 
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+    private JwtAuthenticationFilter jwtAuthenticationFilter() {
 
         JwtAuthenticationFilter authenticationFilter =
                 new JwtAuthenticationFilter(
@@ -85,33 +71,28 @@ public class SecurityConfig {
                         authenticationManager(),
                         tokenExtractor);
 
-        authenticationFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler());
+        authenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
 
         return authenticationFilter;
     }
 
-    @Bean
-    public CustomAuthenticationProvider customAuthenticationProvider() {
-        return new CustomAuthenticationProvider(userDetailsService, passwordEncoder());
+    private JwtRefreshAuthenticationFilter jwtRefreshAuthenticationFilter() {
+
+        AntPathRequestMatcher requestMatcher =
+                new AntPathRequestMatcher(JwtAuthenticationRequestMatcher.REFRESH_TOKEN_PATH_POST.getUrl(),
+                        JwtAuthenticationRequestMatcher.REFRESH_TOKEN_PATH_POST.getMethod()
+                                                                               .name());
+
+        JwtRefreshAuthenticationFilter jwtRefreshAuthenticationFilter =
+                new JwtRefreshAuthenticationFilter(requestMatcher, authenticationManager(), objectMapper);
+
+        jwtRefreshAuthenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
+        jwtRefreshAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
+
+        return jwtRefreshAuthenticationFilter;
     }
 
-    @Bean
-    public JwtAuthenticationProvider jwtAuthenticationProvider() {
-        return new JwtAuthenticationProvider(jwtDecoder);
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        return new ProviderManager(customAuthenticationProvider(), jwtAuthenticationProvider());
-    }
-
-    @Bean
-    public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return new CustomAuthenticationSuccessHandler(jwtProvider, objectMapper);
-    }
-
-    @Bean
-    public CustomAuthenticationFailureHandler customAuthenticationFailureHandler() {
-        return new CustomAuthenticationFailureHandler(objectMapper);
+    private AuthenticationManager authenticationManager() {
+        return new ProviderManager(customAuthenticationProvider, jwtAuthenticationProvider);
     }
 }

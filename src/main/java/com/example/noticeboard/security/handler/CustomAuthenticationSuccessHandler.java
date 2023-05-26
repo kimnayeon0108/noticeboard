@@ -14,9 +14,12 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Component
 public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     private final JwtProvider jwtProvider;
@@ -25,11 +28,12 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         User user = ((UserDetailsDto) authentication.getPrincipal()).getUser();
-        String token = jwtProvider.generateJwtToken(user);
+        String accessToken = jwtProvider.generateAccessToken(user);
+        String refreshToken = jwtProvider.generateRefreshToken(user);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.OK.value());
         response.getWriter()
-                .write(objectMapper.writeValueAsString(ResponseDto.success(new ResTokenDto(token))));
+                .write(objectMapper.writeValueAsString(ResponseDto.success(new ResTokenDto(accessToken, refreshToken))));
     }
 }

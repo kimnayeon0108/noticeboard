@@ -1,18 +1,20 @@
 package com.example.noticeboard.security.jwt;
 
 import com.example.noticeboard.domain.User;
+import com.example.noticeboard.exception.ErrorCode;
 import com.example.noticeboard.security.dto.UserDetailsDto;
+import com.example.noticeboard.security.exception.BaseAuthenticationException;
 import com.example.noticeboard.type.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import jakarta.xml.bind.DatatypeConverter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import jakarta.xml.bind.DatatypeConverter;
 import java.util.Collections;
 
 @Log4j2
@@ -22,19 +24,21 @@ public class JwtDecoder {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    public boolean isValid(String token) {
+    public boolean validCheck(String token) {
         try {
             Claims claims = getClaimsFromToken(token);
 
             log.info("email: {}", claims.get("email"));
-
             return true;
         } catch (ExpiredJwtException e) {
+
             log.error("Token expired");
-            return false;
+            throw new BaseAuthenticationException(ErrorCode.TOKEN_EXPIRE);
+
         } catch (JwtException e) {
+
             log.error("Invalid token");
-            return false;
+            throw new BaseAuthenticationException(ErrorCode.INVALID_TOKEN);
         }
     }
 

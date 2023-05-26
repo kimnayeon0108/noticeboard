@@ -6,11 +6,12 @@ import com.example.noticeboard.security.token.JwtAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 @Log4j2
 public class JwtAuthenticationProvider implements AuthenticationProvider {
@@ -22,9 +23,8 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) authentication;
         String token = (String) authenticationToken.getPrincipal();     // JWT
 
-        if (!jwtDecoder.isValid(token)) {
-            throw new BadCredentialsException("Invalid token");
-        }
+        jwtDecoder.validCheck(token);
+
         UserDetailsDto userDetailsDto = jwtDecoder.decode(token);
 
         return new UsernamePasswordAuthenticationToken(userDetailsDto, null,
