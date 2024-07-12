@@ -1,9 +1,20 @@
-# 게시판 (Spring Security를 이용한 인증)
+# Spring Security 인증 게시판
+👉 **사용 기술** 
+> Spring Boot(3.1.0) </br>
+> Spring Security(6.1.0) </br>
+> Hibernate  
+> QueryDSL
+
+</br>
+
+## ERD
+![게시판erd drawio](https://github.com/user-attachments/assets/1ce9fc56-38d7-4f22-92b6-ded9d164aa49)
+</br>
+## 인증 처리 방식 
 - 인증(Authentication)과 인가(Authorization)를 필터 단에서 진행한다.
 - 원래 필터는 Spring Context에 속하지 않고 서블릿 컨테이너에 속한다.
   하지만 Spring Security를 사용하면 필터 단에서 스프링의 빈들도 사용할 수 있다. 
   인증과 인가를 필터 단에서 수행하고 인증된 유저의 요청만 Spring MVC로 넘길 수 있다.
-
 </br>
 
 ## 게시판 Spring Security 구조 
@@ -38,7 +49,7 @@
     인증 처리 중 발생한 AuthenticationException 타입의 예외를 처리한다.
     
 
-### JwtAuthenticationFilter 동작 흐름 (JWT 복호화)
+### JwtAuthenticationFilter 동작 흐름 (JWT 복호화 인증)
 
 1. **JwtAuthenticationFilter**
     
